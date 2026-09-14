@@ -1,0 +1,205 @@
+/* ============================================================
+   Pages / Tracking — 求职追踪工作区 (Phase 5 / F15 / F16)
+   （tk- 基础卡片/详情/时间线同时被 Offer 页复用）
+   ============================================================ */
+
+.tk {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+}
+.tk-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+.tk-section__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  margin: var(--space-5) 0 var(--space-3);
+}
+
+/* Overview stats */
+.tk-overview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.tk-stat {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  min-width: 84px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tk-stat--total {
+  background: var(--color-primary-weak);
+  border-color: var(--color-primary);
+}
+.tk-stat__num {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+}
+.tk-stat__label {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* Upcoming interviews */
+.tk-upcoming {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.tk-upcoming__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.tk-upcoming__item {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  text-align: left;
+}
+.tk-upcoming__item:hover { border-color: var(--color-primary); }
+.tk-upcoming__when { font-size: var(--text-sm); color: var(--color-text-muted); }
+.tk-upcoming__company { font-weight: var(--weight-semibold); }
+
+/* Filter */
+.tk-filter { margin-bottom: var(--space-3); max-width: 220px; }
+
+/* List */
+.tk-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.tk-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.tk-card__top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.tk-card__company { font-weight: var(--weight-bold); font-size: var(--text-base); }
+.tk-card__job { color: var(--color-text-muted); font-size: var(--text-sm); margin-top: 2px; }
+.tk-card__next {
+  display: flex; align-items: center; gap: 4px;
+  margin-top: var(--space-2);
+  font-size: var(--text-xs); color: var(--color-text-muted);
+}
+.tk-card__actions { display: flex; gap: var(--space-1); flex-shrink: 0; }
+.tk-card__actions .btn--ghost {
+  color: var(--color-text-secondary);
+  border-color: var(--color-border-strong);
+}
+.tk-card__actions .btn--ghost:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: var(--color-primary-weak);
+}
+
+/* Offer 列表卡片：综合得分成为视觉焦点 */
+.tk-compare-intro { font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: var(--space-2); }
+.tk-card__score { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; margin-left: auto; flex-shrink: 0; }
+.tk-card__score-num { font-size: var(--text-2xl); font-weight: var(--weight-bold); color: var(--color-primary); line-height: 1; }
+.tk-card__score-label { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+/* 决策偏好折叠（次级 Section，默认收起） */
+.tk-weights-collapsible {
+  margin-top: var(--space-5); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); background: var(--color-surface); overflow: hidden;
+}
+.tk-weights-collapsible__summary {
+  list-style: none; cursor: pointer; padding: var(--space-4) var(--space-5);
+  font-size: var(--text-base); font-weight: var(--weight-semibold); color: var(--color-text);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+}
+.tk-weights-collapsible__summary::-webkit-details-marker { display: none; }
+.tk-weights-collapsible__summary::after {
+  content: "展开"; font-size: var(--text-xs); font-weight: var(--weight-normal);
+  color: var(--color-text-muted); flex-shrink: 0;
+}
+.tk-weights-collapsible[open] > .tk-weights-collapsible__summary::after { content: "收起"; }
+.tk-weights-collapsible .tk-weights { margin: 0; border: none; border-radius: 0; }
+
+/* Forms inside drawer */
+.tk-form { display: flex; flex-direction: column; gap: var(--space-3); }
+.tk-form__row { display: flex; gap: var(--space-3); }
+.tk-form__row > * { flex: 1; }
+
+/* Detail */
+.tk-detail__head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: var(--space-4);
+}
+.tk-detail__company { font-size: var(--text-lg); font-weight: var(--weight-bold); }
+.tk-detail__status { margin-bottom: var(--space-4); }
+.tk-detail__transitions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+.tk-detail__section { margin-bottom: var(--space-5); }
+.tk-detail__sect-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+.tk-detail__sect-head .tk-section__title { margin: 0; }
+
+/* Interview list */
+.tk-iv-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.tk-iv {
+  position: relative;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+.tk-iv__top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); font-weight: var(--weight-semibold); }
+.tk-iv__note { margin-top: var(--space-1); font-size: var(--text-sm); color: var(--color-text-muted); }
+.tk-iv__del {
+  margin-top: var(--space-2);
+  background: none; border: none; color: var(--color-danger);
+  font-size: var(--text-xs); cursor: pointer; padding: 0;
+}
+
+/* Timeline */
+.tk-timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.tk-tl { display: flex; gap: var(--space-3); position: relative; }
+.tk-tl__dot {
+  flex-shrink: 0; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--color-primary); margin-top: 5px;
+}
+.tk-tl--interview .tk-tl__dot { background: var(--color-warning); }
+.tk-tl__title { font-weight: var(--weight-semibold); font-size: var(--text-sm); }
+.tk-tl__note { margin-top: 2px; font-size: var(--text-sm); color: var(--color-text-muted); }
+
+/* Responsive（640 档：卡片纵向堆叠） */
+@media (max-width: 640px) {
+  .tk-head { flex-direction: column; }
+  .tk-card { flex-direction: column; align-items: stretch; }
+  .tk-card__actions { justify-content: flex-end; }
+  .tk-form__row { flex-direction: column; }
+}

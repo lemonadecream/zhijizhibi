@@ -1,0 +1,145 @@
+/* ============================================================
+   Pages / Auth — 登录 / 注册（P3 改版：左品牌区 + 右表单分栏）
+   ============================================================ */
+
+.auth-split {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+}
+
+/* ----- 左：品牌区（桌面端展示，<1024 隐藏） ----- */
+.auth-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-5);
+  padding: var(--space-12);
+  background:
+    radial-gradient(52% 40% at 82% 14%, rgba(255, 255, 255, 0.12), transparent 60%),
+    var(--gradient-brand);
+  color: var(--color-on-primary);
+}
+.auth-hero__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+}
+.auth-hero__title {
+  font-size: var(--text-4xl);
+  line-height: 1.2;
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.01em;
+  margin: var(--space-2) 0 0;
+}
+.auth-hero__desc {
+  font-size: var(--text-md);
+  line-height: var(--leading-relaxed);
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 460px;
+  margin: 0;
+}
+.auth-hero__points {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.auth-hero__points li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.6;
+}
+.auth-hero__points svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  opacity: 0.9;
+}
+
+/* ----- 右：表单区 ----- */
+.auth-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+  background: var(--color-bg);
+}
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8) var(--space-6);
+  box-shadow: var(--shadow-md);
+}
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+}
+.auth-subtitle {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-6);
+}
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.auth-switch {
+  text-align: center;
+  margin-top: var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+.auth-switch a { font-weight: var(--weight-medium); }
+
+/* ----- Demo 入口（弱于主按钮；位置在卡片内，移动端不会消失） ----- */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-5) 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+.auth-demo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.auth-demo__hint {
+  margin: 0;
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* <1024 收起品牌区；<640 表单卡片去大留白 */
+@media (max-width: 1023px) {
+  .auth-split { grid-template-columns: 1fr; }
+  .auth-hero { display: none; }
+}
+@media (max-width: 640px) {
+  .auth-card { padding: var(--space-6) var(--space-5); }
+}

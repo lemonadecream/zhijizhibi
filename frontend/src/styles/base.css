@@ -1,0 +1,231 @@
+/* ============================================================
+   Base — reset、排版基础与通用工具
+   ============================================================ */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--text-2xl); /* Page Title 24 / 700 */
+  line-height: var(--leading-tight);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.01em;
+}
+h2 {
+  font-size: var(--text-xl); /* Section Title 20 / 600 */
+  line-height: var(--leading-tight);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.005em;
+}
+h3 {
+  font-size: var(--text-lg); /* 17 / 600 */
+  line-height: var(--leading-tight);
+  font-weight: var(--weight-semibold);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---- 页面容器与头部 ---- */
+.page {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-8) var(--space-12); /* 左右 32px，顶部 48px，明显呼吸感 */
+}
+
+.page-header {
+  margin-bottom: var(--space-8); /* 页面 header→主体 32px */
+}
+/* 统一六工作区页面标题：均为 20px / bold，避免 Tracking/Offer 与其余页面字号漂移 */
+.page-header h1,
+.page-title {
+  font-size: var(--text-2xl);
+  line-height: var(--leading-tight);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-2);
+}
+.page-header .page-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.page-desc {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  max-width: 620px;
+}
+
+.section {
+  margin-top: var(--space-8);
+}
+.section-title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-4);
+}
+
+/* ---- 通用工具 ---- */
+.muted {
+  color: var(--color-text-muted);
+}
+.secondary {
+  color: var(--color-text-secondary);
+}
+.row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  margin-top: var(--space-5);
+  flex-wrap: wrap;
+}
+.spacer {
+  flex: 1;
+}
+.mt-2 { margin-top: var(--space-2); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.w-full { width: 100%; }
+.text-center { text-align: center; }
+
+/* ---- 移动端通用（<768：压缩页面留白） ---- */
+@media (max-width: 767px) {
+  .page { padding: var(--space-5) var(--space-4) var(--space-10); }
+}
+
+/* ---- 可访问性：用户偏好减少动效时，停掉装饰性动画 ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---- Section Header（统一「左侧短竖线 + 标题 + 副标题 + 操作」） ----
+   Primary：页面一级 section，带 3px 品牌竖线。
+   Secondary：卡片内分组 / 列表子标题，无竖线、字号更小。 */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.section-header__bar {
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--color-primary);
+  flex: none;
+}
+.section-header__title {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+.section-header__sub {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+.section-header__action { margin-left: auto; }
+.section-header--secondary .section-header__title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+.section-header--secondary .section-header__bar { display: none; }
+
+/* ---- Display / 大数字（匹配总分、综合得分、Hero 数字） ---- */
+.display-num {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Hero eyebrow（柔和 pill，如「AI 给你的定位」） ---- */
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  background: var(--color-ai-weak);
+  color: var(--color-ai-text);
+}
+
+/* ---- Next Step CTA（每页底部明确的「下一步去哪」） ---- */
+.next-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-top: var(--space-8);
+  padding: var(--space-5) var(--space-6);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+}
+.next-step + .next-step { margin-top: var(--space-4); }
+.next-step__text { display: flex; flex-direction: column; gap: 2px; }
+.next-step__title { font-size: var(--text-base); font-weight: var(--weight-semibold); color: var(--color-text-primary); }
+.next-step__desc { font-size: var(--text-sm); color: var(--color-text-secondary); }
+.next-step__actions { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }

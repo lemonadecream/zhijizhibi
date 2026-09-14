@@ -1,0 +1,10 @@
+# 防止秘密与本地状态进入构建上下文（Dockerfile 使用 COPY . .）
+.env
+*.db
+storage/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+tests/

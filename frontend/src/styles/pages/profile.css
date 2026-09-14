@@ -1,0 +1,299 @@
+/* ============================================================
+   Pages / Profile — 职业画像工作区（录入 + 画像展示 pv-）
+   ============================================================ */
+
+.profile-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+.profile-page-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-1);
+}
+.profile-page-desc {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+/* 入口卡片(上传/文本/手动) */
+.entry-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+.entry-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font-family: inherit;
+}
+.entry-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+.entry-card--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-weak);
+}
+/* 继续AI访谈的通栏入口（ProfileHome） */
+.entry-card--wide {
+  width: 100%;
+  margin-top: var(--space-3);
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+}
+.entry-card--wide .entry-desc {
+  margin-left: auto;
+  text-align: right;
+}
+.entry-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-weak);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.entry-title { font-size: var(--text-md); font-weight: var(--weight-semibold); color: var(--color-text); }
+.entry-desc { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+/* 草稿确认 */
+.draft-note {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  background: var(--color-primary-weak);
+  border: 1px solid var(--color-ai-border);
+  color: var(--color-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-4);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* 画像展示 */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+.profile-tag-list {
+  display: flex;
+  flex-direction: column;
+}
+.profile-ai-section {
+  margin-top: var(--space-6);
+}
+.completeness-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+
+/* 占位工作区 */
+.placeholder-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-4);
+}
+
+/* 上传区 */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1.5px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  padding: var(--space-10) var(--space-6);
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.dropzone:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-weak);
+}
+
+@media (max-width: 767px) {
+  .entry-cards { grid-template-columns: 1fr; }
+  .profile-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   Profile View (Phase 1B 视觉重构)
+   ============================================================ */
+.pv { max-width: var(--content-max); margin: 0 auto; }
+.pv-hero {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6) var(--space-8);
+  box-shadow: var(--shadow-sm);
+}
+.pv-hero-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-5);
+}
+.pv-hero-title { font-size: var(--text-2xl); font-weight: var(--weight-bold); }
+.pv-positioning {
+  font-size: var(--text-lg);
+  line-height: 1.7;
+  color: var(--color-text);
+  margin: 0;
+}
+.pv-positioning-mark {
+  display: inline-block;
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+  background: var(--color-primary-weak);
+  border-radius: 999px;
+  padding: 3px 10px;
+  margin-right: 10px;
+  vertical-align: middle;
+  font-weight: var(--weight-medium);
+}
+.pv-goal { margin: var(--space-2) 0 0; color: var(--color-text-secondary); font-size: var(--text-sm); }
+
+.pv-section { margin-top: var(--space-6); }
+.pv-section-title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--space-3);
+  padding-left: 10px;
+  border-left: 3px solid var(--color-primary);
+}
+/* 次级 section：去掉竖线与左内边距，缩小字号，避免满屏竖线机械重复 */
+.pv-section-title--secondary {
+  border-left: none;
+  padding-left: 0;
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+.pv-hint {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  background: var(--color-bg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* 能力地图气泡 */
+.pv-bubbles { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.pv-bubble {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
+  box-shadow: var(--shadow-xs);
+}
+.pv-bubble em { font-style: normal; font-size: var(--text-xs); color: var(--color-primary); }
+.pv-bubble--sm { font-size: var(--text-sm); padding: 6px 12px; }
+.pv-bubble--md { font-size: var(--text-md); }
+.pv-bubble--lg { font-size: var(--text-lg); padding: 12px 22px; border-color: var(--color-primary); background: var(--color-primary-weak); }
+
+/* 职业倾向横条 */
+.pv-tendencies { display: flex; flex-direction: column; gap: var(--space-3); }
+.pv-tendency { display: grid; grid-template-columns: 96px 1fr; gap: var(--space-3); align-items: center; }
+.pv-tendency-label { font-size: var(--text-sm); color: var(--color-text-secondary); }
+.pv-tendency-track {
+  position: relative;
+  height: 8px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+}
+.pv-tendency-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: var(--color-primary);
+  border-radius: 999px;
+  opacity: 0.55;
+}
+.pv-tendency-knob {
+  position: absolute; top: 50%;
+  width: 14px; height: 14px;
+  background: var(--color-primary);
+  border: 2px solid var(--color-surface);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: var(--shadow-sm);
+}
+.pv-tendency-note { grid-column: 2; font-size: var(--text-xs); color: var(--color-text-muted); }
+
+.pv-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); }
+.pv-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.pv-motivations { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-direction: column; gap: 6px; }
+.pv-motivations li {
+  font-size: var(--text-sm); color: var(--color-text-secondary);
+  padding-left: 14px; position: relative; line-height: 1.5;
+}
+.pv-motivations li::before { content: "·"; position: absolute; left: 2px; color: var(--color-primary); }
+
+/* 优势卡片 */
+.pv-strength-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-3); }
+.pv-strength-card {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+.pv-strength-no { font-size: var(--text-xs); color: var(--color-primary); font-weight: var(--weight-bold); }
+.pv-strength-item { font-size: var(--text-md); font-weight: var(--weight-medium); margin: 4px 0 8px; line-height: 1.5; }
+.pv-strength-evidence summary { cursor: pointer; font-size: var(--text-xs); color: var(--color-text-muted); }
+.pv-strength-evidence p { font-size: var(--text-xs); color: var(--color-text-secondary); margin: 6px 0 0; line-height: 1.5; }
+
+/* 需补齐 */
+.pv-gaps { display: flex; flex-direction: column; gap: var(--space-2); }
+.pv-gap {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+.pv-gap-item { font-size: var(--text-md); font-weight: var(--weight-medium); }
+.pv-gap-why { font-size: var(--text-sm); color: var(--color-text-secondary); margin-top: 4px; line-height: 1.5; }
+
+.pv-note { font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.7; margin: 0; }
+
+@media (max-width: 767px) {
+  .pv-grid-2 { grid-template-columns: 1fr; }
+  .pv-strength-grid { grid-template-columns: 1fr; }
+}

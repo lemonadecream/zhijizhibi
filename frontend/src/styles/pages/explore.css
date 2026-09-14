@@ -1,0 +1,160 @@
+/* ============================================================
+   Pages / Explore (Phase 2) — 结构化职业决策界面 + AI 辅助
+   不是 ChatGPT 聊天页：方向卡片/对比/数据是主界面，AI 是辅助入口。
+   ============================================================ */
+
+.exp-page { max-width: var(--content-max); }
+
+/* 第一层：画像摘要条 */
+.exp-profile-bar {
+  display: flex; align-items: center; gap: var(--space-5);
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-5); flex-wrap: wrap;
+}
+.exp-profile-bar__who { display: flex; align-items: center; gap: var(--space-3); min-width: 220px; }
+.exp-profile-bar__avatar {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary-weak);
+  color: var(--color-primary); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.exp-profile-bar__title { font-size: var(--text-xs); color: var(--color-text-muted); }
+.exp-profile-bar__pos { font-size: var(--text-sm); font-weight: var(--weight-medium); line-height: 1.4; }
+.exp-profile-bar__cols { display: flex; gap: var(--space-5); flex: 1; flex-wrap: wrap; }
+.exp-profile-bar__col { display: flex; flex-direction: column; gap: 6px; }
+.exp-profile-bar__col .exp-k { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+/* 第二层：AI 探索入口（轻量，统一 AI Visual Language） */
+.exp-ai-bar {
+  background: var(--color-ai-surface);
+  border: 1px solid var(--color-ai-border); border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5); margin-bottom: var(--space-6);
+}
+.exp-ai-bar__label { display: flex; align-items: center; gap: var(--space-2); color: var(--color-primary); font-size: var(--text-sm); font-weight: var(--weight-medium); margin-bottom: var(--space-3); }
+.exp-ai-bar__input { display: flex; gap: var(--space-3); align-items: flex-end; }
+/* ⚠️ Textarea 组件渲染成 <div class="field"><textarea class="textarea"/></div>，
+   所以这一行的 flex item 是 .field 这个 **wrapper**，不是里面的 .textarea。
+   此前只给 .textarea 写 flex:1，等于没生效：.field 仍是默认的 flex:0 1 auto，
+   会被压缩到内容宽——而 .textarea 的 width:100% 在"父级宽度不确定"的情况下会退化成
+   浏览器默认宽度（cols≈20，约 200px），于是 textarea 只占左侧一小块、右侧留下大片空白。
+   根因在 wrapper，因此这里让 .field 承担 flex 增长，并把 min-width 归零以便窄屏收缩。 */
+.exp-ai-bar__input .field {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.exp-ai-bar__input .textarea {
+  min-height: 96px;           /* Phase 6.5: 恢复完整输入框高度（3-4 行中文） */
+  resize: vertical;
+  height: auto;
+  min-width: 0;
+}
+.exp-ai-bar__chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--space-3); }
+
+/* 第三层：方向推荐 */
+.section-title-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); }
+.exp-rec-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4);
+}
+.exp-card {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.exp-card:hover { border-color: var(--color-primary); box-shadow: var(--shadow-md); }
+/* 推荐层级：Top1 视觉突出并占满整行，Top2 次之，其余保持普通卡片 */
+.exp-card--top1 {
+  grid-column: 1 / -1;
+  padding: var(--space-7);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-border-strong);
+  gap: var(--space-4);
+}
+.exp-card--top1 .exp-card__title { font-size: var(--text-2xl); }
+.exp-card--top1 .exp-card__rank { align-self: flex-start; }
+.exp-card--top2 { border-color: var(--color-border-strong); }
+.exp-card__head-tags { display: flex; gap: var(--space-1); flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+.exp-card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); }
+.exp-card__title {
+  background: none; border: none; padding: 0; cursor: pointer; text-align: left;
+  font-size: var(--text-xl); font-weight: var(--weight-bold); color: var(--color-text); line-height: 1.3;
+}
+.exp-card__title:hover { color: var(--color-primary); }
+.exp-card__summary { font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.55; margin: 0; }
+.exp-card__reason {
+  display: flex; gap: var(--space-2); align-items: flex-start; font-size: var(--text-sm); line-height: 1.55;
+  background: var(--color-ai-bg); color: var(--color-ai-text);
+  border: 1px solid var(--color-ai-border);
+  border-radius: var(--radius-md); padding: var(--space-3);
+}
+.exp-card__reason svg { flex-shrink: 0; margin-top: 2px; color: var(--color-ai-text); }
+.exp-card__basis { display: flex; flex-wrap: wrap; gap: 6px; }
+.exp-basis { font-size: var(--text-xs); color: var(--color-text-secondary); background: var(--color-surface-muted); border-radius: 999px; padding: 3px 10px; line-height: 1.7; }
+.exp-card__meta { display: flex; flex-direction: column; gap: var(--space-2); padding-top: var(--space-1); }
+.exp-meta-row { display: flex; gap: var(--space-3); align-items: flex-start; }
+.exp-meta-k { font-size: var(--text-xs); color: var(--color-text-muted); width: 56px; flex-shrink: 0; padding-top: 3px; }
+.exp-meta-v { display: flex; flex-wrap: wrap; gap: 6px; }
+.exp-card__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+.exp-link {
+  display: inline-flex; align-items: center; gap: 5px; background: none; border: 1px solid var(--color-border);
+  border-radius: 999px; padding: 5px 12px; font-size: var(--text-sm); color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+.exp-link:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-weak); }
+.exp-link.is-on { background: var(--color-primary-weak); border-color: var(--color-primary); color: var(--color-primary); }
+.exp-link--danger:hover { border-color: var(--color-danger); color: var(--color-danger); background: var(--color-danger-weak); }
+
+/* 第四层：对比托盘（浅色 + primary 强调，与全站一致；保持 sticky 突出） */
+.exp-compare-tray {
+  position: sticky; bottom: var(--space-4); margin-top: var(--space-6);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+  background: var(--color-surface); color: var(--color-text);
+  border: 1px solid var(--color-primary); border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-5); box-shadow: var(--shadow-lg);
+}
+.exp-compare-tray__info { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-secondary); }
+.exp-compare-tray__actions { display: flex; gap: var(--space-2); }
+.exp-compare-tray .btn--ghost { color: var(--color-text-secondary); border-color: var(--color-border-strong); }
+.exp-compare-tray .btn--ghost:hover { background: var(--color-surface-muted); color: var(--color-text); }
+
+/* Drawer 详情 */
+.exp-detail { display: flex; flex-direction: column; gap: var(--space-3); }
+.exp-detail__desc { font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.6; margin: 0; }
+.exp-detail__h { font-size: var(--text-sm); font-weight: var(--weight-semibold); margin: var(--space-2) 0 0; color: var(--color-text); }
+.exp-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.exp-job-list { display: flex; flex-direction: column; gap: var(--space-1); }
+.exp-job-item {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  background: var(--color-surface-muted); border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4); font-size: var(--text-sm); color: var(--color-text); cursor: pointer; text-align: left;
+}
+.exp-job-item:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.exp-detail__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
+
+/* 对比视图 */
+.exp-compare { display: flex; flex-direction: column; gap: var(--space-3); }
+.exp-compare__advice {
+  display: flex; gap: var(--space-2); align-items: flex-start; background: var(--color-warning-weak);
+  border-radius: var(--radius-md); padding: var(--space-3); font-size: var(--text-sm); color: var(--color-warning); line-height: 1.55;
+}
+.exp-compare__advice svg { flex-shrink: 0; margin-top: 2px; }
+.exp-compare__head, .exp-compare__row { display: grid; grid-template-columns: 96px repeat(var(--exp-cols, 2), 1fr); gap: var(--space-2); align-items: stretch; }
+.exp-compare__corner { }
+.exp-compare__colhead { font-weight: var(--weight-semibold); font-size: var(--text-sm); padding: var(--space-2); background: var(--color-surface-muted); border-radius: var(--radius-md); }
+.exp-compare__label { font-size: var(--text-xs); color: var(--color-text-muted); display: flex; align-items: center; padding: var(--space-2) 0; }
+.exp-compare__row { border-top: 1px solid var(--color-border); padding-top: var(--space-2); }
+.exp-compare__cell { font-size: var(--text-sm); padding: var(--space-2); display: flex; align-items: center; }
+.exp-compare__text { line-height: 1.5; }
+.exp-cell-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.exp-compare__note { font-size: var(--text-xs); color: var(--color-text-muted); text-align: center; margin-top: var(--space-2); }
+
+/* 响应式 */
+@media (max-width: 1023px) {
+  .exp-rec-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .exp-ai-bar__input { flex-direction: column; align-items: stretch; }
+  .exp-ai-bar__input .btn { width: 100%; }
+  .exp-profile-bar { flex-direction: column; align-items: flex-start; gap: var(--space-3); }
+  .exp-compare__head, .exp-compare__row { grid-template-columns: 72px repeat(var(--exp-cols, 2), 1fr); }
+  .exp-compare__cell { font-size: var(--text-xs); }
+}

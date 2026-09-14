@@ -1,0 +1,44 @@
+# ===== 秘密与环境 =====
+.env
+.env.*
+!.env.example
+
+# ===== 数据库文件（含用户数据，禁止入库）=====
+*.db
+*.sqlite3
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+.pytest_cache/
+venv/
+.venv/
+
+# ===== Node / 前端 =====
+node_modules/
+dist/
+*.tsbuildinfo
+# 由 vite.config.ts / tsconfig 编译出的产物，不应入库
+frontend/vite.config.js
+frontend/vite.config.d.ts
+
+# ===== 运行时数据 =====
+backend/storage/
+
+# ===== 工具缓存 =====
+.mypy_cache/
+.ruff_cache/
+coverage/
+.vitest/
+*.log
+
+# ===== 内部开发记录（不进入开源仓库）=====
+# 会话交接、阶段性验证报告、运维记录等。文件保留在本地，仅不提交。
+internal/
+
+# ===== IDE / 系统 =====
+.idea/
+.vscode/
+.cursor/
+Thumbs.db
+.DS_Store

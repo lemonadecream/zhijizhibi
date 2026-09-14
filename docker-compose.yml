@@ -1,0 +1,46 @@
+# Simple single-host stack: Postgres + backend (+ frontend at build time).
+# No Kubernetes, no microservices.
+#
+# 部署前必须在 shell 环境或 .env 中提供：
+#   JWT_SECRET   —— 强随机密钥（缺失时 compose 直接报错，杜绝占位符上线）
+#   AI_API_KEY   —— AI 网关密钥
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: career
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-career_pass}
+      POSTGRES_DB: career
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U career -d career"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql://career:${POSTGRES_PASSWORD:-career_pass}@db:5432/career
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set (see .env.example)}
+      AI_BASE_URL: ${AI_BASE_URL:-https://api.openai.com/v1}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-gpt-4o-mini}
+      AI_PROVIDER: ${AI_PROVIDER:-openai}
+      STORAGE_ROOT: /app/storage
+      CORS_ORIGINS: http://localhost:5173
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - backend_storage:/app/storage
+
+volumes:
+  pgdata:
+  backend_storage:

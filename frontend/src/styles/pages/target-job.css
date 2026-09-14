@@ -1,0 +1,206 @@
+/* ============================================================
+   Pages / Target Job 工作区 (Phase 3)
+   ============================================================ */
+
+.tj-page { display: flex; flex-direction: column; gap: var(--space-5); }
+.tj-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+.tj-header__actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+/* P0-2: direction context banner (carried from Explore / bound to the job). */
+.tj-dir-banner {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-ai-surface); border: 1px solid var(--color-ai-border);
+  border-radius: var(--radius-lg); font-size: var(--text-sm); color: var(--color-text);
+}
+.tj-dir-banner .muted { margin-left: 2px; }
+
+.tj-card {
+  background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl);
+  padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4);
+}
+.tj-card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
+
+.tj-job-title { display: flex; gap: var(--space-3); align-items: flex-start; color: var(--color-primary); }
+.tj-job-title__main { font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text); display: flex; gap: var(--space-2); align-items: baseline; flex-wrap: wrap; }
+.tj-job-title__input {
+  font: inherit; font-weight: var(--weight-bold); font-size: var(--text-lg);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  min-width: 240px; width: min(360px, 100%);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.tj-job-title__input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-weak);
+}
+.tj-job-title__input::placeholder { color: var(--color-text-secondary); font-weight: var(--weight-normal); }
+.tj-job-title__company { font-size: var(--text-sm); font-weight: var(--weight-normal); color: var(--color-text-secondary); }
+.tj-job-title__meta { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; margin-top: var(--space-1); }
+
+.tj-status { font-size: var(--text-xs); padding: 2px 8px; border-radius: var(--radius-full); background: var(--color-surface-muted); color: var(--color-text-muted); }
+.tj-status--unparsed { background: var(--color-surface-muted); }
+.tj-status--parsed, .tj-status--fallback { background: var(--color-warning-weak); color: var(--color-warning); }
+.tj-status--user_edited { background: var(--color-success-weak); color: var(--color-success); }
+
+.tj-section { display: flex; flex-direction: column; gap: var(--space-3); }
+.tj-section__title { font-size: var(--text-base); font-weight: var(--weight-semibold); margin: 0; }
+.tj-section__actions { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }
+.tj-fallback-note { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-xs); color: var(--color-warning); }
+/* 原 pages.css 里的全局 .muted 覆盖（secondary 色 + text-sm）收敛到 tj 作用域，
+   不再污染全站（base.css 的 .muted 是唯一全局定义）。 */
+.tj-page .muted { color: var(--color-text-secondary); font-size: var(--text-sm); }
+
+.tj-link { background: none; border: none; color: var(--color-primary); cursor: pointer; font-size: var(--text-sm); padding: 0; }
+.tj-link--danger { color: var(--color-danger); }
+
+/* create / empty */
+.tj-create { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+.tj-create__cta { display: flex; gap: var(--space-2); }
+.tj-create__hint { font-size: var(--text-sm); color: var(--color-text-secondary); }
+
+/* workspace */
+.tj-workspace { display: flex; flex-direction: column; gap: var(--space-5); }
+.tj-job-headline { display: flex; gap: var(--space-3); align-items: center; color: var(--color-primary); }
+.tj-job-headline__title { font-size: var(--text-xl); font-weight: var(--weight-bold); color: var(--color-text); }
+.tj-job-headline__sub { font-size: var(--text-sm); color: var(--color-text-secondary); margin-top: 2px; }
+
+.tj-overview { display: flex; flex-direction: column; gap: var(--space-2); }
+.tj-overview__row { display: flex; gap: var(--space-3); align-items: flex-start; font-size: var(--text-sm); }
+.tj-overview__row .tj-k { width: 64px; flex-shrink: 0; color: var(--color-text-muted); }
+.tj-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.tj-block { display: flex; flex-direction: column; gap: var(--space-2); }
+.tj-block__h { font-size: var(--text-sm); font-weight: var(--weight-semibold); margin: var(--space-2) 0 0; color: var(--color-text); }
+.tj-list { margin: 0; padding-left: var(--space-5); font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.6; }
+
+/* ability model grid */
+.tj-ability-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-3); }
+.tj-ability-chip { border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
+.tj-ability-chip__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.tj-ability-chip__name { font-weight: var(--weight-medium); font-size: var(--text-sm); }
+.tj-ability-chip__meta { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+/* match */
+.tj-match-empty { display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-start; }
+.tj-match { display: flex; flex-direction: column; gap: var(--space-4); }
+.tj-match__headline { display: flex; gap: var(--space-4); align-items: center; }
+.tj-score { display: flex; align-items: baseline; gap: 2px; padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); }
+.tj-score__num { font-size: var(--text-3xl); font-weight: var(--weight-bold); line-height: 1; }
+.tj-score__unit { font-size: var(--text-sm); }
+.tj-score--green { background: var(--color-success-weak); color: var(--color-success); }
+.tj-score--blue { background: var(--color-info-weak); color: var(--color-info); }
+.tj-score--gray { background: var(--color-surface-muted); color: var(--color-text-muted); }
+.tj-match__summary { display: flex; flex-direction: column; gap: var(--space-1); }
+.tj-match__verdict { font-weight: var(--weight-semibold); font-size: var(--text-sm); }
+
+.tj-dims { display: flex; flex-direction: column; gap: var(--space-2); }
+.tj-dim { display: flex; flex-direction: column; gap: 4px; }
+.tj-dim__top { display: flex; justify-content: space-between; font-size: var(--text-sm); }
+.tj-dim__val { font-weight: var(--weight-semibold); }
+.tj-dim__bar { height: 8px; background: var(--color-surface-muted); border-radius: var(--radius-full); overflow: hidden; }
+.tj-dim__fill { height: 100%; border-radius: var(--radius-full); }
+.tj-dim__fill--green { background: var(--color-success); }
+.tj-dim__fill--blue { background: var(--color-info); }
+.tj-dim__fill--gray { background: var(--color-text-muted); }
+
+.tj-relations { display: flex; flex-direction: column; gap: var(--space-2); }
+.tj-relation { border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3); display: flex; flex-direction: column; gap: 4px; }
+.tj-relation__head { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.tj-relation__name { font-weight: var(--weight-medium); font-size: var(--text-sm); }
+.tj-relation__cat { font-size: var(--text-xs); color: var(--color-text-muted); margin-left: auto; }
+.tj-rel-icon--covered { color: var(--color-success); }
+.tj-rel-icon--partial { color: var(--color-warning); }
+.tj-rel-icon--missing { color: var(--color-danger); }
+.tj-relation__reason, .tj-relation__evidence { display: flex; gap: 6px; align-items: flex-start; font-size: var(--text-xs); color: var(--color-text-secondary); line-height: 1.5; margin: 0; }
+.tj-relation__reason svg { flex-shrink: 0; margin-top: 2px; color: var(--color-ai-text); }
+.tj-relation__evidence svg { flex-shrink: 0; margin-top: 2px; color: var(--color-primary); }
+
+.tj-gaps { display: flex; flex-direction: column; gap: var(--space-3); }
+.tj-gap { border: 1px solid var(--color-border); border-left: 3px solid var(--color-danger); border-radius: var(--radius-md); padding: var(--space-3); display: flex; flex-direction: column; gap: 4px; }
+.tj-gap__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.tj-gap__name { font-weight: var(--weight-medium); font-size: var(--text-sm); }
+.tj-gap__why, .tj-gap__evidence, .tj-gap__fix { display: flex; gap: 6px; align-items: flex-start; font-size: var(--text-xs); color: var(--color-text-secondary); line-height: 1.5; margin: 0; }
+.tj-gap__why svg, .tj-gap__evidence svg, .tj-gap__fix svg { flex-shrink: 0; margin-top: 2px; }
+.tj-gap__why--na { color: var(--color-text-muted); font-style: italic; }
+
+/* Phase 5 层级收口：Hero / 结论 / 能力匹配列表 / Gap 分组 / JD 降级 */
+.tj-hero {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-6); flex-wrap: wrap; padding: var(--space-7);
+}
+.tj-hero__id { min-width: 0; flex: 1 1 260px; }
+.tj-hero__eyebrow { font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-2); letter-spacing: .02em; }
+.tj-hero__title { font-size: var(--text-2xl); font-weight: var(--weight-bold); color: var(--color-text); margin: 0; line-height: 1.2; }
+.tj-hero__sub { font-size: var(--text-md); color: var(--color-text-secondary); margin-top: var(--space-2); }
+.tj-hero__score { display: flex; align-items: center; gap: var(--space-4); flex-shrink: 0; }
+.tj-hero__score .tj-score { padding: var(--space-4) var(--space-5); }
+.tj-hero__score-note { display: flex; flex-direction: column; gap: 4px; }
+
+/* 一句话结论（Level 1.5） */
+.tj-verdict {
+  font-size: var(--text-md); color: var(--color-text); line-height: 1.65;
+  margin: 0; padding: var(--space-1) var(--space-1);
+}
+
+/* 能力匹配列表（替代逐条 Card） */
+.tj-match-list { display: flex; flex-direction: column; }
+.tj-match-row {
+  display: flex; align-items: flex-start; gap: var(--space-3);
+  padding: var(--space-3) 0; border-bottom: 1px solid var(--color-border-subtle);
+}
+.tj-match-row:last-child { border-bottom: none; }
+.tj-match-row__main { flex: 1; min-width: 0; }
+.tj-match-row__name { font-weight: var(--weight-medium); font-size: var(--text-sm); color: var(--color-text); }
+.tj-match-row__reason {
+  display: flex; gap: 6px; align-items: flex-start;
+  font-size: var(--text-xs); color: var(--color-ai-text); line-height: 1.5; margin: 4px 0 0;
+}
+.tj-match-row__reason svg { flex-shrink: 0; margin-top: 2px; }
+.tj-match-row__side { display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }
+
+/* Gap 分组（按优先级，第二视觉焦点） */
+.tj-gap-group { display: flex; flex-direction: column; gap: var(--space-3); }
+.tj-gap-group + .tj-gap-group { margin-top: var(--space-4); }
+.tj-gap-group__title { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-text-secondary); }
+.tj-gap--high { border-left-color: var(--color-danger); }
+.tj-gap--medium { border-left-color: var(--color-warning); }
+.tj-gap--low { border-left-color: var(--color-text-muted); }
+
+/* JD 详情降级（参考信息，flat / muted） */
+.tj-jd-flat {
+  background: var(--color-surface-muted); border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg); padding: var(--space-5) var(--space-6);
+  display: flex; flex-direction: column; gap: var(--space-3);
+}
+.tj-jd-flat__head { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-text-muted); }
+
+@media (max-width: 640px) {
+  .tj-hero { flex-direction: column; align-items: flex-start; }
+  .tj-hero__score { width: 100%; justify-content: flex-start; }
+}
+
+/* ability editor */
+.tj-editor { display: flex; flex-direction: column; gap: var(--space-2); }
+.tj-editor__row { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
+.tj-editor__name { flex: 1; min-width: 160px; padding: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: var(--text-sm); }
+.tj-editor__cat, .tj-editor__lvl select, .tj-editor__w input { padding: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: var(--text-sm); background: var(--color-surface); }
+.tj-editor__lvl, .tj-editor__w { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-xs); color: var(--color-text-muted); }
+.tj-editor__w input { width: 64px; }
+.tj-editor__del { background: none; border: none; color: var(--color-danger); cursor: pointer; padding: var(--space-1); }
+
+/* switcher */
+.tj-switcher { display: flex; flex-direction: column; gap: var(--space-2); }
+.tj-switcher__item { text-align: left; background: var(--color-surface-muted); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3); cursor: pointer; }
+.tj-switcher__item.is-active { border-color: var(--color-primary); background: var(--color-info-weak); }
+.tj-switcher__title { font-weight: var(--weight-medium); font-size: var(--text-sm); }
+.tj-switcher__meta { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-top: 4px; font-size: var(--text-xs); color: var(--color-text-secondary); }
+
+@media (max-width: 640px) {
+  .tj-match__headline { flex-direction: column; align-items: flex-start; }
+  .tj-header__actions { width: 100%; }
+}

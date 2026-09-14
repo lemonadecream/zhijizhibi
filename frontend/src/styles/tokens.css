@@ -1,0 +1,140 @@
+/* ============================================================
+   Design Tokens — 职己职彼（懂职场，也更懂自己。）
+   Design System V1（Phase 4 落地）
+   年轻 · 清爽 · 个人档案感 · 克制 AI（浅紫身份色）
+   ============================================================ */
+:root {
+  /* ---- 颜色：背景与表面 ---- */
+  --color-bg: #f7f8fc;            /* 页面全局背景：冷白灰，比旧版更冷更浅 */
+  --color-surface: #ffffff;       /* 主卡片 / 内容区 / 弹窗 */
+  --color-surface-elevated: #fbfcfe; /* 悬浮态 / 强调表面 */
+  --color-surface-muted: #f2f4f8; /* 输入框底 / 空态 / 灰 tag / Flat 列表底 */
+
+  /* ---- 颜色：边框（低对比三档；更轻更淡，减少"表格框线感"） ---- */
+  --color-border: #e9ecf3;        /* 默认卡片 / 分区边框 */
+  --color-border-subtle: #f1f3f8; /* 分隔线 / 淡底卡片内边框 */
+  --color-border-strong: #d8dde7; /* 输入框 / 强调边框 / focus 环 */
+
+  /* ---- 颜色：文字（深蓝黑，非纯黑） ---- */
+  --color-text: #161a23;          /* 主标题（兼容旧引用） */
+  --color-text-primary: #161a23;  /* 主标题 / 重要数字 */
+  --color-text-secondary: #4a5160;/* 正文 / 说明 */
+  --color-text-muted: #667085;    /* 占位 / 时间 / 辅助标签（V2：#8b92a3→#667085，浅底对比度 3.1→4.6:1，过 WCAG AA） */
+
+  /* ---- 颜色：品牌蓝（明亮但克制，仅服务品牌 + 主行动 + 关键焦点） ---- */
+  --color-primary: #3b6ef9;
+  --color-primary-hover: #2e5ce0;
+  --color-primary-active: #274dbf;
+  --color-primary-weak: #eef3ff;
+  --color-on-primary: #ffffff;
+
+  /* ---- 颜色：语义状态 ---- */
+  --color-success: #16a34a;
+  --color-success-weak: #ecfdf3;
+  --color-warning: #e08a1e;
+  --color-warning-weak: #fdf6ea;
+  --color-danger: #e5484d;
+  --color-danger-hover: #c53035; /* danger 悬停深档（按钮按压前的过渡） */
+  --color-danger-weak: #fdecec;
+  /* info 复用品牌蓝（tag/badge/score 的“蓝”全部收敛到品牌蓝，避免全站皆蓝以外再开一色） */
+  --color-info: #3b6ef9;
+  --color-info-weak: #eef3ff;
+
+  /* ---- 颜色：AI 视觉语言（浅紫身份色，与品牌蓝明确区分） ---- */
+  --color-ai-bg: #f6f4fe;
+  --color-ai-border: #e6e0fb;
+  --color-ai-text: #6d4fd8;       /* 柔和紫：AI 标识文字 / 图标 */
+  --color-ai-weak: #efe9fd;       /* AI badge / 弱底 */
+  --color-ai-surface: #f6f4fe;    /* 纯色，不再使用 gradient（克制） */
+
+  /* ---- 品牌渐变（蓝→紫：Logo / 品牌区 / 英雄时刻专用，业务组件禁用） ---- */
+  --gradient-brand: linear-gradient(135deg, #3b6ef9 0%, #6d4fd8 100%);
+  /* V3 极光体系：大面积氛围（hero 底/插画）与柔和水洗底 */
+  --gradient-aurora: linear-gradient(135deg, #3b6ef9 0%, #7a5cf0 45%, #b46ef0 100%);
+  --gradient-soft: linear-gradient(160deg, rgba(59, 110, 249, 0.06) 0%, rgba(180, 110, 240, 0.07) 100%);
+  --shadow-glow: 0 6px 24px rgba(109, 79, 216, 0.22), 0 2px 8px rgba(59, 110, 249, 0.14);
+
+  /* ---- 排版：字号（拉大标题与正文的落差，解决重量差距不够） ---- */
+  --font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  --text-xs: 12px;   /* Caption：标签 / 时间戳 / 字段名 */
+  --text-sm: 13px;   /* Secondary：描述 / hint / 副标题 */
+  --text-md: 15px;   /* Body：默认正文 */
+  --text-base: 16px; /* Card Title：卡片标题 / 列表主文字 */
+  --text-lg: 17px;   /* 小标题 / 卡片标题强调 */
+  --text-xl: 20px;   /* Section Title：页面一级 section */
+  --text-2xl: 28px;  /* Page Title：各页面 h1（V2：24→28，拉大与正文的落差） */
+  --text-3xl: 30px;  /* Display：匹配总分、综合得分 */
+  --text-4xl: 36px;  /* Hero：欢迎页大标语（V2 新增） */
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --leading-tight: 1.35;
+  --leading-normal: 1.65;   /* 正文更透气 */
+  --leading-relaxed: 1.75;  /* 长文本 / 说明段落 */
+
+  /* ---- 间距（4px 基准，明显增强呼吸感但不降密度） ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;  /* Hero 内边距（修复旧版未定义 --space-7 的回退） */
+  --space-8: 32px;  /* 页面 header→主体 / 一级 section 间距 */
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* ---- 圆角（更自然柔和，减少方块感与后台感） ---- */
+  --radius-sm: 8px;    /* 小 badge / icon-btn */
+  --radius-md: 10px;   /* 按钮 / 输入框 / 文本域 / 选择 */
+  --radius-12: 12px;   /* Section / Flat 卡片 */
+  --radius-lg: 16px;   /* Default 卡片 / AI 块 */
+  --radius-xl: 20px;   /* Hero 卡片 / Modal / Drawer */
+  --radius-full: 999px;
+
+  /* ---- 边框（统一别名） ---- */
+  --border-width: 1px;
+  --border-color: var(--color-border);
+
+  /* ---- 阴影（双层弥散：近处定型 + 远处氛围，更有空气感） ----
+     层级仍主要靠 surface 色阶与留白，阴影只做辅助。 */
+  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04), 0 2px 6px rgba(16, 24, 40, 0.04);
+  --shadow-md: 0 2px 4px rgba(16, 24, 40, 0.04), 0 6px 16px rgba(16, 24, 40, 0.06);
+  --shadow-lg: 0 4px 8px rgba(16, 24, 40, 0.05), 0 16px 32px rgba(16, 24, 40, 0.09);
+  --shadow-modal: 0 8px 16px rgba(16, 24, 40, 0.08), 0 24px 56px rgba(16, 24, 40, 0.14);
+
+  /* ---- 过渡（统一 easing，更轻快顺滑） ---- */
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-fast: 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-base: 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ---- 语义别名（历史引用兼容，指向新 token） ---- */
+  --color-primary-soft: var(--color-primary-weak);
+  --color-bg-soft: var(--color-surface-muted);
+  --color-surface-soft: var(--color-surface-muted);
+
+  /* ---- 布局 ---- */
+  --sidebar-width: 232px;
+  --topbar-height: 56px;
+  --content-max: 1040px;
+  --bottom-nav-height: 60px;
+
+  /* ---- 响应式断点约定（媒体查询不能用 CSS 变量，值在此统一） ----
+     手机 ≤640 / 平板竖 <768(写 767) / 平板横+窄桌面 <1024(写 1023) / 宽桌面 ≥1180
+     全站禁止再出现 639 / 720 / 980 等漂移值。 */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1180px;
+
+  /* ---- 层级 ---- */
+  --z-nav: 20;
+  --z-overlay: 50;
+  --z-toast: 80;
+}
