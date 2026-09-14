@@ -54,7 +54,7 @@ Demo 使用 **Mock 模式**（确定性数据、不联网、零模型成本）�
 ### 1. 安装
 
 ```bash
-git clone <this-repo>
+git clone https://github.com/<your-username>/zhijizhibi.git
 cd career-decision-platform
 ```
 
@@ -132,7 +132,9 @@ cp .env.example .env      # 填入 JWT_SECRET 与 AI 配置
 docker compose up
 ```
 
-后端与 PostgreSQL 一键启动（前端请单独 `npm run dev` 或构建为静态资源）。缺失 `JWT_SECRET` 时 compose 会直接报错——这是刻意的，用于杜绝占位符上线。
+后端与 PostgreSQL 容器一并启动（前端请单独 `npm run dev` 或构建为静态资源）。缺失 `JWT_SECRET` 时 compose 会直接报错——这是刻意的，用于杜绝占位符上线。
+
+> ⚠️ **已知限制**：`requirements.txt` 目前**未包含 PostgreSQL 驱动**（`psycopg` / `asyncpg`），因此 compose 里的 `DATABASE_URL=postgresql://...` 需要先补上驱动才能连通数据库。本项目**默认使用 SQLite**（零外部依赖、首次启动自动建表），本文档其余步骤与 CI 走的都是 SQLite 路径。
 
 ---
 
