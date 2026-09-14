@@ -158,7 +158,7 @@ React 18 + TypeScript + Vite          FastAPI + SQLAlchemy + Pydantic
 
 - **六大工作区**：Profile / Explore / Target Job / Prepare / Tracking / Offer
 - **数据模型**：37 张表，覆盖经历、画像、方向、岗位、匹配、Gap、准备、追踪、Offer 与决策权重
-- **数据库**：开发用 SQLite，生产用 PostgreSQL，共用同一套迁移；`schema_migrations` 跟踪版本，迁移与版本标记在同一事务内提交（不存在「半应用却标记为已迁移」的窗口）
+- **数据库**：开发环境默认使用 SQLite；项目保留了 PostgreSQL 兼容配置（`docker-compose.yml`），但当前公开 Demo 与 CI 均使用 SQLite。SQLite / PostgreSQL 共用同一套迁移；`schema_migrations` 跟踪版本，迁移与版本标记在同一事务内提交（不存在「半应用却标记为已迁移」的窗口）
 - **认证与隔离**：JWT（`sub` = user_id），所有数据访问强制携带 `user_id`；跨用户读取返回 404 而非 403，不泄露资源存在性
 - **无厂商锁定**：不引入任何模型 SDK，AI 调用就是一次 HTTP 请求
 
