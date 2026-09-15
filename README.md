@@ -54,8 +54,8 @@ Demo 使用 **Mock 模式**（确定性数据、不联网、零模型成本）�
 ### 1. 安装
 
 ```bash
-git clone https://github.com/<your-username>/zhijizhibi.git
-cd career-decision-platform
+git clone https://github.com/lemonadecream/zhijizhibi.git
+cd zhijizhibi
 ```
 
 **后端**
@@ -221,7 +221,7 @@ React 18 + TypeScript + Vite          FastAPI + SQLAlchemy + Pydantic
 ## Testing
 
 ```bash
-# 后端（123 个用例，使用 Mock Provider，完全离线）
+# 后端（166 个用例，使用 Mock Provider，完全离线）
 cd backend && venv\Scripts\python.exe -m pytest tests -q
 
 # 前端
