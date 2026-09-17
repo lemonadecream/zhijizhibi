@@ -5,25 +5,57 @@
 
 .exp-page { max-width: var(--content-max); }
 
-/* 第一层：画像摘要条 */
+/* 第一层：画像摘要条
+   根因（按真实截图实测，viewport 1024）：
+   卡片内宽 697px。上一版把它切成 1fr / 1fr，于是左右各得约 340px。
+   但左侧「你是谁」的定位文案只有约 250px 就完了 —— 它左边留下 ~90px 空白，
+   视觉上"没写完"；右侧却要塞下「优势/兴趣/能力」三组、且优势那组
+   单条标签就有三段长文本（最长 199px），三段被压在 340px 里反复折行，
+   组与组之间又只靠 space-2(8px) 分隔 → 挤成一片。
+   修法：按**内容重量**分配，而不是机械对半 —— 左列收到 minmax(0, 0.86fr)，
+   右列放量到 minmax(0, 1.14fr)，并把右列三组从"并排三小列"改为
+   "纵向三行"（每组独占一行整个宽度），组间距提到 space-5。
+   这样左列不再空出大片、右列标签也不再被迫折行。 */
 .exp-profile-bar {
-  display: flex; align-items: center; align-content: center;
-  /* 行间距单独收紧：flex-wrap 换行时 row-gap 不再吃 20px，避免卡片"内容一两行却很高" */
-  gap: var(--space-2) var(--space-5);
+  display: grid;
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+  align-items: center;
+  column-gap: var(--space-6);
+  row-gap: var(--space-5);
   background: var(--color-surface); border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg); padding: var(--space-3) var(--space-5);
-  margin-bottom: var(--space-5); flex-wrap: wrap;
+  border-radius: var(--radius-lg); padding: var(--space-5) var(--space-5);
+  margin-bottom: var(--space-5);
 }
 /* 不设任何固定高度：卡片高度完全由内容决定 */
-.exp-profile-bar__who { display: flex; align-items: center; gap: var(--space-3); min-width: 200px; }
+.exp-profile-bar__who { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
 .exp-profile-bar__avatar {
   width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary-weak);
   color: var(--color-primary); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .exp-profile-bar__title { font-size: var(--text-xs); color: var(--color-text-muted); }
-.exp-profile-bar__pos { font-size: var(--text-sm); font-weight: var(--weight-medium); line-height: 1.4; }
-.exp-profile-bar__cols { display: flex; gap: var(--space-5); flex: 1; flex-wrap: wrap; }
-.exp-profile-bar__col { display: flex; flex-direction: column; gap: 6px; }
+/* 定位文案：给足行高，作为左列唯一的内容主体 */
+.exp-profile-bar__pos {
+  font-size: var(--text-sm); font-weight: var(--weight-medium);
+  line-height: var(--leading-relaxed); min-width: 0; text-wrap: pretty;
+}
+/* 优势 / 兴趣 / 能力：纵向三行，每组独占整行宽度 —— 让长标签能一行放下，
+   同时组与组之间有明确的纵向节奏，不再挤成一个"标签墙"。 */
+.exp-profile-bar__cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  min-width: 0;
+}
+/* 每组（优势/兴趣/能力）：标题与标签之间、标签彼此之间都要有呼吸 */
+.exp-profile-bar__col { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+/* 标签容器：这里才是"标签墙"的真正来源。
+   旧版是一个裸 <div> 紧接着并列的 Tag，没有任何 gap，
+   Tag 又是 inline-flex，于是同一行内几乎贴在一起、多行时上下也贴死。 */
+.exp-profile-bar__col > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
 .exp-profile-bar__col .exp-k { font-size: var(--text-xs); color: var(--color-text-muted); }
 
 /* 第二层：AI 探索入口（轻量，统一 AI Visual Language） */
@@ -155,11 +187,14 @@
 /* 响应式 */
 @media (max-width: 1023px) {
   .exp-rec-grid { grid-template-columns: 1fr; }
+  /* 中等宽度：画像条改为上下两段（右列三组本来就是纵向三行，无需再变） */
+  .exp-profile-bar { grid-template-columns: minmax(0, 1fr); column-gap: 0; row-gap: var(--space-5); }
 }
 @media (max-width: 640px) {
   .exp-ai-bar__input { flex-direction: column; align-items: stretch; }
   .exp-ai-bar__input .btn { width: 100%; }
-  .exp-profile-bar { flex-direction: column; align-items: flex-start; gap: var(--space-3); }
+  .exp-profile-bar { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-5); }
+  .exp-profile-bar__cols { gap: var(--space-5); }
   .exp-compare__head, .exp-compare__row { grid-template-columns: 72px repeat(var(--exp-cols, 2), 1fr); }
   .exp-compare__cell { font-size: var(--text-xs); }
 }

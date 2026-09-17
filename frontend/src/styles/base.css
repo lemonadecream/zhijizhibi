@@ -90,14 +90,21 @@ button {
   align-items: center;
   gap: var(--space-3);
 }
+/* 页面副标题。
+   root cause（2026-09-17 按真实截图实测，viewport 1024）：
+   内容区实际可用宽度 = 696px（x 241→937）。但副标题第 1 行只排到 430px
+   就换行了，第 2 行只剩「画像。」2 个字（21px）——一个孤字行，
+   右侧白扔约 266px。
+   原因是上一版用 `max-width: 76ch` 限宽。**ch 量的是数字 "0" 的宽度，
+   对中文文本没有约束意义**：13px 下 76ch ≈ 494~642px，恰好卡在
+   「一行放不下、又远没用满容器」的区间，于是制造出这个孤字行。
+   修法：中文文案用 px 度量，并且不再人为收窄——副标题本来就是一句话，
+   让它自然占满内容区的主宽度即可（这正是需求要的"自然、完整的文本块"）。
+   仍然保留 text-wrap: pretty 来避免任何残余的孤字行，且不是 nowrap。 */
 .page-desc {
   color: var(--color-text-secondary);
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
-  max-width: 620px;
-  /* 副标题是短文案，最怕最后一行只剩一个孤字。
-     pretty 让浏览器在换行时避免"孤字行"——不是 nowrap，因此不会撑破容器。
-     不支持该属性的浏览器会忽略这一行，回落到默认换行。 */
   text-wrap: pretty;
 }
 

@@ -24,10 +24,14 @@ import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { IllustrationOffer } from "../../components/ui/Illustrations";
 import AiBadge from "../../components/AiBadge";
 
+/* 状态色按语义映射（全站降噪）：
+   accepted「已接受」是**正向状态** → 绿；draft/active/rejected/expired 都是中性事实 → 灰。
+   旧值把 accepted 映射成 red（红色在本站语义是删除/错误/风险），
+   等于把"已拿 Offer"标成了告警色，且与 active 的蓝色互相打架。 */
 const STATUS_COLORS: Record<string, "blue" | "green" | "orange" | "red" | "gray"> = {
   draft: "gray",
-  active: "blue",
-  accepted: "red",
+  active: "gray",
+  accepted: "green",
   rejected: "gray",
   expired: "gray",
 };
@@ -252,7 +256,7 @@ export default function OfferPage() {
                     </div>
                   )}
                   <Tag tone={STATUS_COLORS[o.status] || "gray"}>{o.status_label}</Tag>
-                  {s && <Tag tone="red">第 {s.rank} 名</Tag>}
+                  {s && <Tag tone="gray">第 {s.rank} 名</Tag>}
                 </div>
                 <div className="tk-card__actions">
                   {compareMode && (
@@ -556,7 +560,7 @@ function OfferDetail({ offer, onClose, onAccept, onOpenCalc }: {
             const a = assess?.[dim];
             return (
               <div className="tk-iv" key={dim}>
-                <div className="tk-iv__top"><span>{DIM_LABELS[dim]}</span><Tag tone="blue">{a?.tier || "未评估"}</Tag></div>
+                <div className="tk-iv__top"><span>{DIM_LABELS[dim]}</span><Tag tone="purple">{a?.tier || "未评估"}</Tag></div>
                 <div className="tk-iv__note">{a?.reason || "点击「AI 评估」获取定性判断，或自行判断。"}</div>
               </div>
             );
@@ -575,7 +579,7 @@ function OfferDetail({ offer, onClose, onAccept, onOpenCalc }: {
                   <div className="tk-card__company">{o.company} · {o.job_title}</div>
                   <div className="tk-card__job">综合得分 {o.composite_score}</div>
                 </div>
-                <Tag tone="red">第 {o.rank} 名</Tag>
+                <Tag tone="gray">第 {o.rank} 名</Tag>
               </div>
             ))}
             <div className="ai-block" style={{ marginTop: 12 }}>

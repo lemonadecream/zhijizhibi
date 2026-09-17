@@ -221,7 +221,15 @@
 }
 
 /* ---------- Tag / Badge ---------- */
-/* Tag：无硬边框、纯弱底 + 柔和字色，更轻盈不抢戏 */
+/* Tag 色彩规则（全站降噪）：
+   颜色只表达**语义**，不用来区分标签种类。
+     blue   → 品牌主色。仅用于"与主要操作/主色语义相关"的少量标签
+     purple → AI 专属语义（AI 定位 / AI 辅助 / 最推荐）
+     green  → 真正的成功、已覆盖、正向状态
+     red    → 删除、错误、风险、真正的负面判断
+     orange → 真正的 warning / 提醒
+     gray   → 其余一切普通属性标签（能力、兴趣、行业、职位类型…）
+   因此普通能力标签一律用 gray，不要把每个标签刷成不同颜色。 */
 .tag {
   display: inline-flex;
   align-items: center;
@@ -233,11 +241,16 @@
   line-height: 1.7;
   letter-spacing: 0.01em;
 }
+/* 中性灰：普通标签的默认形态——浅灰底 + 极细边框 + 深灰字，克制、不抢戏 */
+.tag--gray {
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-subtle);
+}
 .tag--blue   { background: var(--color-info-weak); color: var(--color-primary); }
 .tag--green  { background: var(--color-success-weak); color: var(--color-success); }
 .tag--orange { background: var(--color-warning-weak); color: var(--color-warning); }
 .tag--red    { background: var(--color-danger-weak); color: var(--color-danger); }
-.tag--gray   { background: var(--color-surface-muted); color: var(--color-text-secondary); }
 .tag--purple { background: var(--color-ai-weak); color: var(--color-ai-text); } /* AI 身份色（与品牌蓝区分） */
 
 .badge {

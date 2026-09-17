@@ -62,7 +62,7 @@ export default function DraftConfirm({ parsed, onConfirm, onCancel }: DraftConfi
           <Card title="技能与兴趣">
             <div className="chips">
               {draft.skills.map((s, i) => (
-                <Tag key={`s${i}`} tone="blue">{s.name}{s.level ? ` L${s.level}` : ""}</Tag>
+                <Tag key={`s${i}`} tone="gray">{s.name}{s.level ? ` L${s.level}` : ""}</Tag>
               ))}
               {draft.interests.map((t, i) => (
                 <Tag key={`t${i}`} tone="gray">{t}</Tag>

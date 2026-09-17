@@ -95,45 +95,42 @@
   font-size: var(--text-md);
   line-height: var(--leading-relaxed);
   color: var(--color-text-secondary);
-  margin: 0 auto var(--space-6);
-  max-width: 52ch;
+  margin: 0 auto var(--space-7);
+  /* 中文文案不用 ch 限宽（ch 量的是数字 "0" 的宽度，对中文无约束意义），
+     改 px。首屏卡片内宽 = 720 - 2×24 = 672px，留一点余量取 560px，
+     保证是一句完整、居中、不孤字的话。 */
+  max-width: 560px;
   text-wrap: pretty;
 }
-.dmo-intro__body strong { color: var(--color-text-primary); font-weight: var(--weight-semibold); }
 
-.dmo-guides {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
-}
-.dmo-guide {
+/* 单一主 CTA：独占一行，与辅助入口拉开层级（辅助入口不做成并列卡片） */
+.dmo-intro__cta {
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  text-align: left;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  font-size: var(--text-sm);
-  font-family: inherit;
-  cursor: pointer;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast),
-    background var(--transition-fast);
+  justify-content: center;
+  margin-bottom: var(--space-4);
 }
-.dmo-guide:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary-weak);
-  box-shadow: var(--shadow-xs);
+/* 低权重辅助入口：小字、弱色，不与主 CTA 竞争 */
+.dmo-intro__alt {
+  margin: 0 auto var(--space-6);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  max-width: 420px; /* 同上：中文用 px，不用 ch */
+  text-wrap: pretty;
 }
-.dmo-guide svg { flex: 0 0 auto; color: var(--color-primary); }
 
 .dmo-intro__note {
   margin: var(--space-5) 0 0;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border-subtle);
   font-size: var(--text-xs);
+  line-height: var(--leading-relaxed);
   color: var(--color-text-muted);
+  max-width: 520px; /* 同上 */
+  margin-left: auto;
+  margin-right: auto;
+  text-wrap: pretty;
 }
+.dmo-intro__body strong { color: var(--color-text-primary); font-weight: var(--weight-semibold); }
 
 /* ---------- 进度 ---------- */
 .dmo-progress {
@@ -275,7 +272,8 @@
   .dmo-main { padding: var(--space-4) var(--space-3) var(--space-4); }
   .dmo-intro { padding: var(--space-6) var(--space-4); }
   .dmo-intro__title { font-size: var(--text-xl); }
-  .dmo-guides { grid-template-columns: 1fr; }
   .dmo-bubble { max-width: 88%; }
   .dmo-topbar { padding: var(--space-3) var(--space-4); }
+  /* 顶栏三个元素（品牌 + 标识 + 跳过）在窄屏换行，避免互相挤压 */
+  .dmo-topbar__brand { flex-wrap: wrap; row-gap: 4px; }
 }

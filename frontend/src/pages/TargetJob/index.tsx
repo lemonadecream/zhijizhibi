@@ -342,7 +342,7 @@ export default function TargetJobPage() {
                 </div>
                 <div className="tj-job-title__meta">
                   <Tag tone="gray">{(draft ?? current)?.city || "城市待定"}</Tag>
-                  <Tag tone="blue">{(draft ?? current)?.industry || "行业待定"}</Tag>
+                  <Tag tone="gray">{(draft ?? current)?.industry || "行业待定"}</Tag>
                   <span className={`tj-status tj-status--${(draft ?? current)?.jd_status}`}>
                     {jdStatusLabel((draft ?? current)?.jd_status)}
                   </span>

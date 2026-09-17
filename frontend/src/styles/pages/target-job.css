@@ -134,10 +134,14 @@
      - 不再靠 flex-wrap 在窄档把两列挤成上下两行（那会让短的一列被垂直居中，两侧留白）
      - 卡片高度完全由内容决定，没有任何固定高度
      - 岗位名称/公司/城市/行业始终在卡片主区（左列），分值区固定在右侧窄列 */
+/* 根因：外层 grid 是 align-items:start，右列又显式写了 align-self:start，
+   两处叠加导致右侧「分数 + 综合判断 + 说明」整块贴顶，
+   而左侧主体有 eyebrow/标题/副标题/编辑按钮四行、明显更高，
+   于是右块看起来"浮"在上半部分。这里让两列共享同一条垂直中心线。 */
 .tj-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
+  align-items: center;
   gap: var(--space-5) var(--space-7);
   padding: var(--space-6);
 }
@@ -145,14 +149,25 @@
 .tj-hero__eyebrow { font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-2); letter-spacing: .02em; }
 .tj-hero__title { font-size: var(--text-2xl); font-weight: var(--weight-bold); color: var(--color-text); margin: 0; line-height: 1.2; }
 .tj-hero__sub { font-size: var(--text-md); color: var(--color-text-secondary); margin-top: var(--space-2); }
-/* 分值区：分 → 结论/说明 → 重新匹配，自上而下三级，宽度收窄不挤压左侧主区 */
+/* 分值区。
+   根因（按真实截图实测）：左列是「eyebrow/标题/副标题/编辑按钮」四行、高约 109px；
+   右列本身只有约 72px。父级 grid 的 align-items:center 只保证"两块各自居中"，
+   但右列内部用 flex-wrap + justify-content:flex-end，"重新匹配"按钮被甩到最右、
+   和分数块不在同一条水平线上，于是整块读起来仍然是偏上的。
+   这里改成真正对齐的网格：分数块 | 文字块 | 操作按钮，三者在同一行、
+   统一 vertical-align 到 center，整块再靠 align-self:center 与左侧共享中心线。 */
 .tj-hero__score {
-  display: flex; align-items: center; gap: var(--space-3);
-  justify-content: flex-end; flex-wrap: wrap;
-  align-self: start; min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, auto) auto;
+  align-items: center;
+  justify-items: end;
+  gap: var(--space-3) var(--space-4);
+  align-self: center;
+  min-width: 0;
 }
 .tj-hero__score .tj-score { padding: var(--space-3) var(--space-4); }
-.tj-hero__score-note { display: flex; flex-direction: column; gap: 4px; }
+/* 文字块内部：结论 / 说明 / AI 标记，保持紧凑的一列 */
+.tj-hero__score-note { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 
 /* 一句话结论（Level 1.5） */
 .tj-verdict {
@@ -193,14 +208,22 @@
 .tj-jd-flat__head { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-text-muted); }
 
 @media (max-width: 900px) {
-  /* 窄档收成单列：岗位身份在上、分值区在下，分值区左对齐避免"挤在右边"的观感 */
+  /* 窄档收成单列：岗位身份在上、分值区在下。
+     分值区解除"右侧对齐"，改为左对齐，避免窄屏下被推到右边挤成一团。 */
   .tj-hero { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
-  .tj-hero__score { justify-content: flex-start; align-self: auto; }
+  .tj-hero__score { justify-items: start; align-self: auto; }
 }
 
 @media (max-width: 640px) {
   .tj-hero { padding: var(--space-5); }
-  .tj-hero__score { width: 100%; }
+  /* 窄屏：分数块独占一行，文字块与按钮排到下一行，整体左对齐。
+     三列（分数|文字|按钮）在这里收成两列，让它自然堆叠而不是硬挤。 */
+  .tj-hero__score {
+    width: 100%;
+    grid-template-columns: auto minmax(0, 1fr);
+    justify-items: start;
+    row-gap: var(--space-3);
+  }
 }
 
 /* ability editor */

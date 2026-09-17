@@ -253,7 +253,7 @@ export default function ExplorePage() {
                     </button>
                     <div className="exp-card__head-tags">
                       {tier === "top1" && <Tag tone="purple">最推荐</Tag>}
-                      {tier === "top2" && <Tag tone="blue">推荐</Tag>}
+                      {tier === "top2" && <Tag tone="gray">推荐</Tag>}
                       <Tag tone={scoreTone(d.score)}>{scoreLabel(d.score)}</Tag>
                     </div>
                   </header>
@@ -332,9 +332,10 @@ export default function ExplorePage() {
         {Object.keys(state.preferences).length > 0 && (
           <div className="exp-ai-bar__chips">
             {Object.entries(state.preferences).map(([k, v]) => {
-              if (Array.isArray(v) && v.length) return v.map((x) => <Tag key={`${k}-${x}`} tone="blue">{String(x)}</Tag>);
-              if (typeof v === "boolean" && v) return <Tag key={k} tone="green">{prefLabel(k)}</Tag>;
-              if (typeof v === "string") return <Tag key={k} tone="blue">{String(v)}</Tag>;
+              // 这些是「AI 记录下来的偏好」，属于 AI 语义 → 统一淡紫，不再用蓝/绿区分类型
+              if (Array.isArray(v) && v.length) return v.map((x) => <Tag key={`${k}-${x}`} tone="purple">{String(x)}</Tag>);
+              if (typeof v === "boolean" && v) return <Tag key={k} tone="purple">{prefLabel(k)}</Tag>;
+              if (typeof v === "string") return <Tag key={k} tone="purple">{String(v)}</Tag>;
               return null;
             })}
           </div>
@@ -381,7 +382,7 @@ export default function ExplorePage() {
         {industryDetail && (
           <div className="exp-detail">
             <p className="exp-detail__desc">{industryDetail.description}</p>
-            <div className="exp-tags">{industryDetail.traits.map((t) => <Tag key={t} tone="blue">{t}</Tag>)}</div>
+            <div className="exp-tags">{industryDetail.traits.map((t) => <Tag key={t} tone="gray">{t}</Tag>)}</div>
             <h4 className="exp-detail__h">常见岗位</h4>
             <div className="exp-job-list">
               {industryDetail.jobs.map((j) => (
@@ -406,7 +407,7 @@ export default function ExplorePage() {
             </div>
             <div className="exp-meta-row">
               <span className="exp-meta-k">入门门槛</span>
-              <div className="exp-meta-v"><Tag tone="orange">{'★'.repeat(jobDetail.entry_barrier)}{'☆'.repeat(5 - jobDetail.entry_barrier)}</Tag></div>
+              <div className="exp-meta-v"><Tag tone="gray">{'★'.repeat(jobDetail.entry_barrier)}{'☆'.repeat(5 - jobDetail.entry_barrier)}</Tag></div>
             </div>
             <div className="exp-meta-row">
               <span className="exp-meta-k">工作方式</span>
@@ -459,13 +460,15 @@ function ProfileSummaryBar({ profile }: { profile: NonNullable<ExploreHome["prof
         </div>
       </div>
       <div className="exp-profile-bar__cols">
+        {/* 优势 / 兴趣 / 能力 都是**普通能力标签**，按全站降噪规则统一中性灰，
+            不再用绿/蓝/灰三色去区分——颜色只表达语义，不做分类装饰。 */}
         <div className="exp-profile-bar__col">
           <span className="exp-k">优势</span>
-          <div>{profile.strengths.slice(0, 3).map((s) => <Tag key={s} tone="green">{s}</Tag>)}</div>
+          <div>{profile.strengths.slice(0, 3).map((s) => <Tag key={s} tone="gray">{s}</Tag>)}</div>
         </div>
         <div className="exp-profile-bar__col">
           <span className="exp-k">兴趣</span>
-          <div>{profile.interest_tags.slice(0, 3).map((s) => <Tag key={s} tone="blue">{s}</Tag>)}</div>
+          <div>{profile.interest_tags.slice(0, 3).map((s) => <Tag key={s} tone="gray">{s}</Tag>)}</div>
         </div>
         <div className="exp-profile-bar__col">
           <span className="exp-k">能力</span>

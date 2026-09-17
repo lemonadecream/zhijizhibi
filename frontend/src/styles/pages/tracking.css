@@ -143,7 +143,25 @@
 }
 
 /* Offer 列表卡片：综合得分成为视觉焦点 */
+/* 层级：页面标题 → 说明 → 比较工具栏 → (明确的 section gap) → 卡片列表。
+   根因（按真实截图实测，viewport 1024）：
+   1) 「比较 Offer」按钮的父级 .tk-filter 在上一轮移除「全部状态」Select 时
+      连样式一起删掉了，但 Offer 页仍在用这个 class，
+      于是一个没有任何 margin 的 div 把按钮和第一张卡片压在一起；
+   2) 上一轮虽然补回了 margin，但量级搞反了 —— 实测「说明→按钮」只有 12px，
+      「按钮→首卡」只有 24px，两者几乎同级，
+      于是按钮读起来像"说明文字的附属"，而不是一个独立的操作区。
+   修法：把工具栏当作独立 section，让它与上方说明保持 8px 的紧凑（说明是它的标题），
+   与下方列表拉开到 32px（= 全站 .page-header 的 section 节奏）。
+   这样"按钮贴着第一张卡片"的观感才会真正消失。 */
 .tk-compare-intro { font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: var(--space-2); }
+.tk-filter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-8); /* 32px：工具栏 → 列表 的 section gap */
+}
 .tk-card__score { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; margin-left: auto; flex-shrink: 0; }
 .tk-card__score-num { font-size: var(--text-2xl); font-weight: var(--weight-bold); color: var(--color-primary); line-height: 1; }
 .tk-card__score-label { font-size: var(--text-xs); color: var(--color-text-muted); }

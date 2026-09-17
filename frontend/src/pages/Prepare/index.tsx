@@ -278,7 +278,7 @@ export default function PreparePage() {
             {tj.company && <span className="pj-summary__company">@ {tj.company}</span>}
           </div>
           <div className="pj-summary__meta">
-            {tj.industry && <Tag tone="blue">{tj.industry}</Tag>}
+            {tj.industry && <Tag tone="gray">{tj.industry}</Tag>}
             {home.match_summary && (
               <Tag tone="gray">匹配度 {Math.round(home.match_summary.total_score)}%</Tag>
             )}
@@ -535,7 +535,7 @@ function PrepTaskCard({
               {PRIORITY_LABEL[task.priority] || task.priority}
             </Tag>
             {gap && <Tag tone="orange">Gap {Math.round(gap.gap_degree * 100)}%</Tag>}
-            {task.is_user_edited && <Tag tone="blue">已手动调整</Tag>}
+            {task.is_user_edited && <Tag tone="gray">已手动调整</Tag>}
           </div>
         </div>
         <div className="pj-task__ops">
