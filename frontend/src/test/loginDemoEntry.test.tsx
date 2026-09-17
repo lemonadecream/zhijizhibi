@@ -5,7 +5,8 @@
  * 不是"按钮长什么样"，而是**它走的是不是那条唯一的登录链路**：
  *
  * 1. 点击后调用的是同一个 `api.login`，凭据就是公开演示账号；
- * 2. 落点是 `/profile`，且**不触碰** `api.getOnboardingSession`（不参与 onboarding 判定，
+ * 2. 落点是 `/demo-interview`（「AI 认识你」冷启动访谈），且**不触碰**
+ *    `api.getOnboardingSession`（不参与 onboarding 判定，
  *    因此绝不会被丢进 onboarding）；
  * 3. 普通账号的登录/注册路径逐字未变：仍走 `getOnboardingSession` 分流
  *    （finalized → /profile，否则 → /onboarding）；
@@ -50,6 +51,7 @@ function renderLogin() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<div>REGISTER_PAGE</div>} />
           <Route path="/profile" element={<div>PROFILE_PAGE</div>} />
+          <Route path="/demo-interview" element={<div>DEMO_INTERVIEW_PAGE</div>} />
           <Route path="/onboarding" element={<div>ONBOARDING_PAGE</div>} />
         </Routes>
       </AuthProvider>
@@ -86,23 +88,25 @@ describe("登录页 · 体验 Demo 入口", () => {
     expect(screen.getByRole("button", { name: "登录" })).toBeInTheDocument();
   });
 
-  it("点击后用演示账号走同一个登录接口，并直接进入 /profile", async () => {
+  it("点击后用演示账号走同一个登录接口，并进入「AI 认识你」冷启动访谈", async () => {
     renderLogin();
     fireEvent.click(screen.getByRole("button", { name: /体验 Demo/ }));
 
-    await waitFor(() => expect(screen.getByText("PROFILE_PAGE")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("DEMO_INTERVIEW_PAGE")).toBeInTheDocument());
 
     expect(m.login).toHaveBeenCalledTimes(1);
     expect(m.login).toHaveBeenCalledWith({ identifier: DEMO_EMAIL, password: DEMO_PASSWORD });
     // 未登录 token 已持久化，后续页面读取 Step 2 数据靠的就是它
     expect(localStorage.getItem("cdp_token")).toBe("demo-token");
+    // 冷启动访谈是过程页，不该直接落到画像
+    expect(screen.queryByText("PROFILE_PAGE")).not.toBeInTheDocument();
   });
 
   it("Demo 入口不做 onboarding 判定，因此不会被丢进 onboarding", async () => {
     renderLogin();
     fireEvent.click(screen.getByRole("button", { name: /体验 Demo/ }));
 
-    await waitFor(() => expect(screen.getByText("PROFILE_PAGE")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("DEMO_INTERVIEW_PAGE")).toBeInTheDocument());
     expect(m.getOnboardingSession).not.toHaveBeenCalled();
     expect(screen.queryByText("ONBOARDING_PAGE")).not.toBeInTheDocument();
   });
@@ -115,7 +119,7 @@ describe("登录页 · 体验 Demo 入口", () => {
     await waitFor(() =>
       expect(screen.getByText("演示账号暂时不可用")).toBeInTheDocument()
     );
-    expect(screen.queryByText("PROFILE_PAGE")).not.toBeInTheDocument();
+    expect(screen.queryByText("DEMO_INTERVIEW_PAGE")).not.toBeInTheDocument();
     expect(localStorage.getItem("cdp_token")).toBeNull();
   });
 });

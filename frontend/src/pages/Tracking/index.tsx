@@ -30,6 +30,10 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   rejected: "未通过",
   withdrawn: "已放弃",
 };
+/** 反向查表：后端 overview.counts_labeled 的键是中文标签，而筛选要的是状态枚举值。 */
+const LABEL_TO_STATUS = Object.fromEntries(
+  (Object.entries(STATUS_LABELS) as [ApplicationStatus, string][]).map(([k, v]) => [v, k])
+) as Record<string, ApplicationStatus>;
 const STATUS_TONE: Record<ApplicationStatus, "gray" | "blue" | "orange" | "green" | "red"> = {
   drafted: "gray",
   applied: "blue",
@@ -182,19 +186,36 @@ export default function TrackingPage() {
         <LoadingState skeleton lines={4} />
       ) : (
         <>
-          {/* Overview */}
+          {/* Overview —— 统计卡本身就是状态筛选器（不再另设下拉框） */}
           {overview && (
-            <section className="tk-overview">
-              <div className="tk-stat tk-stat--total">
+            <section className="tk-overview" role="group" aria-label="按投递状态筛选">
+              <button
+                type="button"
+                className={`tk-stat tk-stat--total ${statusFilter === "" ? "is-active" : ""}`}
+                aria-pressed={statusFilter === ""}
+                onClick={() => setStatusFilter("")}
+              >
                 <span className="tk-stat__num">{overview.total}</span>
                 <span className="tk-stat__label">总投递</span>
-              </div>
-              {Object.entries(overview.counts_labeled).map(([label, n]) => (
-                <div key={label} className="tk-stat">
-                  <span className="tk-stat__num">{n}</span>
-                  <span className="tk-stat__label">{label}</span>
-                </div>
-              ))}
+              </button>
+              {Object.entries(overview.counts_labeled).map(([label, n]) => {
+                const status = LABEL_TO_STATUS[label];
+                const active = status !== undefined && statusFilter === status;
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    className={`tk-stat ${active ? "is-active" : ""}`}
+                    aria-pressed={active}
+                    onClick={() => {
+                      if (status) setStatusFilter(status);
+                    }}
+                  >
+                    <span className="tk-stat__num">{n}</span>
+                    <span className="tk-stat__label">{label}</span>
+                  </button>
+                );
+              })}
             </section>
           )}
 
@@ -223,21 +244,6 @@ export default function TrackingPage() {
               </div>
             </section>
           )}
-
-          {/* Filter */}
-          <div className="tk-filter">
-            <Select
-              value={statusFilter}
-              options={[
-                { value: "", label: "全部状态" },
-                ...(Object.keys(STATUS_LABELS) as ApplicationStatus[]).map((s) => ({
-                  value: s,
-                  label: STATUS_LABELS[s],
-                })),
-              ]}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            />
-          </div>
 
           {/* List */}
           {apps.length === 0 ? (

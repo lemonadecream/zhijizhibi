@@ -12,6 +12,7 @@ import PreparePage from "./pages/Prepare";
 import TrackingPage from "./pages/Tracking";
 import OfferPage from "./pages/Offer";
 import OnboardingPage from "./pages/Onboarding";
+import DemoInterviewPage from "./pages/DemoInterview";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { token, loading } = useAuth();
@@ -44,6 +45,16 @@ export default function App() {
         element={
           <RequireAuthPlain>
             <OnboardingPage />
+          </RequireAuthPlain>
+        }
+      />
+
+      {/* 在线 Demo 的冷启动访谈：只在 Demo 入口使用，与正式 onboarding 完全隔离 */}
+      <Route
+        path="/demo-interview"
+        element={
+          <RequireAuthPlain>
+            <DemoInterviewPage />
           </RequireAuthPlain>
         }
       />

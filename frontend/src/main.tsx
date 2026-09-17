@@ -12,6 +12,7 @@ import "./styles/layout.css";
 import "./styles/pages/auth.css";
 import "./styles/pages/profile.css";
 import "./styles/pages/onboarding.css";
+import "./styles/pages/demo-interview.css";
 import "./styles/pages/explore.css";
 import "./styles/pages/target-job.css";
 import "./styles/pages/prepare.css";

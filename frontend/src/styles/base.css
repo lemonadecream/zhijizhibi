@@ -95,6 +95,15 @@ button {
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
   max-width: 620px;
+  /* 副标题是短文案，最怕最后一行只剩一个孤字。
+     pretty 让浏览器在换行时避免"孤字行"——不是 nowrap，因此不会撑破容器。
+     不支持该属性的浏览器会忽略这一行，回落到默认换行。 */
+  text-wrap: pretty;
+}
+
+/* 移动端：宽度本来就紧张，恢复自然换行，避免因避让孤字而产生奇怪的断点 */
+@media (max-width: 640px) {
+  .page-desc { text-wrap: auto; }
 }
 
 .section {

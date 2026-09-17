@@ -129,16 +129,29 @@
 .tj-gap__why--na { color: var(--color-text-muted); font-style: italic; }
 
 /* Phase 5 层级收口：Hero / 结论 / 能力匹配列表 / Gap 分组 / JD 降级 */
+/* HERO：左侧"岗位身份"占主区，右侧"匹配分"自成一层。
+   改为网格 + 顶部对齐：
+     - 不再靠 flex-wrap 在窄档把两列挤成上下两行（那会让短的一列被垂直居中，两侧留白）
+     - 卡片高度完全由内容决定，没有任何固定高度
+     - 岗位名称/公司/城市/行业始终在卡片主区（左列），分值区固定在右侧窄列 */
 .tj-hero {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: var(--space-6); flex-wrap: wrap; padding: var(--space-7);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-5) var(--space-7);
+  padding: var(--space-6);
 }
-.tj-hero__id { min-width: 0; flex: 1 1 260px; }
+.tj-hero__id { min-width: 0; }
 .tj-hero__eyebrow { font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: var(--space-2); letter-spacing: .02em; }
 .tj-hero__title { font-size: var(--text-2xl); font-weight: var(--weight-bold); color: var(--color-text); margin: 0; line-height: 1.2; }
 .tj-hero__sub { font-size: var(--text-md); color: var(--color-text-secondary); margin-top: var(--space-2); }
-.tj-hero__score { display: flex; align-items: center; gap: var(--space-4); flex-shrink: 0; }
-.tj-hero__score .tj-score { padding: var(--space-4) var(--space-5); }
+/* 分值区：分 → 结论/说明 → 重新匹配，自上而下三级，宽度收窄不挤压左侧主区 */
+.tj-hero__score {
+  display: flex; align-items: center; gap: var(--space-3);
+  justify-content: flex-end; flex-wrap: wrap;
+  align-self: start; min-width: 0;
+}
+.tj-hero__score .tj-score { padding: var(--space-3) var(--space-4); }
 .tj-hero__score-note { display: flex; flex-direction: column; gap: 4px; }
 
 /* 一句话结论（Level 1.5） */
@@ -179,9 +192,15 @@
 }
 .tj-jd-flat__head { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-text-muted); }
 
+@media (max-width: 900px) {
+  /* 窄档收成单列：岗位身份在上、分值区在下，分值区左对齐避免"挤在右边"的观感 */
+  .tj-hero { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
+  .tj-hero__score { justify-content: flex-start; align-self: auto; }
+}
+
 @media (max-width: 640px) {
-  .tj-hero { flex-direction: column; align-items: flex-start; }
-  .tj-hero__score { width: 100%; justify-content: flex-start; }
+  .tj-hero { padding: var(--space-5); }
+  .tj-hero__score { width: 100%; }
 }
 
 /* ability editor */

@@ -103,6 +103,66 @@ def test_comparison_f23_and_f24(client):
     assert "recommendations" in comp["analysis"]
 
 
+def _confirm_scores(offer_id: int, scores: dict) -> None:
+    """写入"用户确认的四维 0-100 分"（offer_dimension）。
+
+    Demo seed 走的是同一个服务函数。AI 永远不会写这张表——它只写
+    ai_dimension_reference 的档位；数字必须由用户/匹配产生。
+    """
+    from app.db.base import SessionLocal
+    from app.models.offer import Offer
+    from app.services.decision_service import save_dimension_scores
+
+    with SessionLocal() as db:
+        row = db.get(Offer, offer_id)
+        assert row is not None
+        save_dimension_scores(db, user_id=row.user_id, offer_id=offer_id, scores=scores)
+
+
+def test_comparison_scores_nonzero_and_ordered(client):
+    """三个 Offer 补齐四维分 + 税后薪资后，综合分必须非 0 且排序稳定。
+
+    回归背景（本用例守的就是这个）：``offer_dimension`` 当时没有任何可达写入路径，
+    且 ``compute_comparison`` 从不注入 ``economic`` / ``disposable``，
+    结果是**所有用户**的综合分恒为 0，排名退化成插入顺序（显示 1/2/3 名却全是 0 分）。
+    """
+    h = _auth_header(client)
+    # 与 Demo seed 同构的三份 Offer：成长 vs 稳定的真实取舍
+    specs = [
+        ("云枢科技", "杭州", 13000, {"growth": 82, "match": 78, "workload": 65, "stability": 80}),
+        ("麦浪文化", "上海", 15000, {"growth": 90, "match": 88, "workload": 40, "stability": 55}),
+        ("星野数据", "杭州", 11000, {"growth": 62, "match": 70, "workload": 82, "stability": 85}),
+    ]
+    for company, city, base, dims in specs:
+        o = _make_offer(client, h, company=company, city=city,
+                        salary={"monthly_base": base, "annual_bonus_months": 3})
+        oid = o["offer_id"]
+        client.put(f"/api/offer/applications/{oid}", json={"status": "active"}, headers=h)
+        client.post(f"/api/offer/applications/{oid}/salary_calc", json={}, headers=h)
+        _confirm_scores(oid, dims)
+
+    client.put("/api/offer/weights",
+               json={"weights": {"economic": 15, "disposable": 10, "workload": 10,
+                                 "stability": 10, "growth": 40, "match": 15},
+                     "preset_name": "growth"}, headers=h)
+
+    offers = client.get("/api/offer/comparison", headers=h).json()["offers"]
+    assert len(offers) == 3
+
+    scores = [o["composite_score"] for o in offers]
+    # 1) 综合分非 0
+    assert all(s > 0 for s in scores), f"composite 不应为 0: {scores}"
+    # 2) 降序稳定 + rank 一致
+    assert scores == sorted(scores, reverse=True), scores
+    assert [o["rank"] for o in offers] == [1, 2, 3]
+    # 3) 六个维度全部参与计算（没有静默跳过的权重）
+    for o in offers:
+        for dim in ("economic", "disposable", "workload", "stability", "growth", "match"):
+            assert o["dimension_scores"][dim] is not None, (o["company"], dim)
+    # 4) 该数据集下"高成长"应胜出、"稳定但成长低"垫底——锁住排序语义
+    assert [o["company"] for o in offers] == ["麦浪文化", "云枢科技", "星野数据"]
+
+
 def test_offer_accept_keeps_others(client):
     h = _auth_header(client)
     o1 = _make_offer(client, h)

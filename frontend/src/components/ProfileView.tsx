@@ -71,7 +71,11 @@ export default function ProfileView({ profile, onUpdated }: ProfileViewProps) {
       {/* 顶部:定位总结 */}
       <section className="pv-hero">
         <div className="pv-hero-head">
-          <h2 className="pv-hero-title">你的职业画像</h2>
+          {/* 标题与「AI 给你的定位」同排：badge 紧跟标题、垂直居中，避免拆成两行 */}
+          <div className="pv-hero-head__identity">
+            <h2 className="pv-hero-title">你的职业画像</h2>
+            <Badge tone="purple">AI 给你的定位</Badge>
+          </div>
           <div className="row" style={{ gap: 8 }}>
             <Badge tone={statusTone}>{profile.status === "edited" ? "已编辑" : "AI 生成"}</Badge>
             <Badge tone="neutral">v{profile.version ?? 1}</Badge>
@@ -82,7 +86,6 @@ export default function ProfileView({ profile, onUpdated }: ProfileViewProps) {
             )}
           </div>
         </div>
-        <span className="hero-eyebrow" style={{ marginBottom: 12 }}>AI 给你的定位</span>
         <p className="pv-positioning">{positioningText}</p>
         {careerGoal && (
           <p className="pv-goal">求职意向：{careerGoal}</p>

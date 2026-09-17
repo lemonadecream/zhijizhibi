@@ -128,11 +128,20 @@ def save_dimension_scores(db: Session, *, user_id: int, offer_id: int,
 
 # ----------------------------- F23 综合评分 -----------------------------
 def compute_comparison(db: Session, *, user_id: int, offer_ids: list[int] | None = None,
-                       weights: dict | None = None) -> dict:
+                       weights: dict | None = None,
+                       computed: dict[int, dict] | None = None) -> dict:
     """Compute the deterministic composite comparison for the user's offers.
 
     Only ``active`` / ``accepted`` offers participate (PRD 8.2.2). If offer_ids
     is given, restrict to that subset (still must belong to the user).
+
+    ``computed`` supplies the quantitative dimensions that are NOT stored in
+    ``offer_dimension`` (which only holds the four user-confirmed qualitative
+    scores). It maps ``offer_id -> {"economic": float, "disposable": float}``,
+    produced by the caller from the persisted salary calc + city cost
+    (see ``analysis_service.run_decision_analysis``). Omitting it keeps the
+    previous behavior: quantitative dims are treated as unknown and excluded
+    from the weighted average.
 
     Returns:
       {comparison_id, offers:[{offer_id, company, job_title, city, status,
@@ -157,19 +166,22 @@ def compute_comparison(db: Session, *, user_id: int, offer_ids: list[int] | None
         }
 
     # Gather per-offer computed inputs.
+    computed = computed or {}
     rows = []
     for o in offers:
+        # offer_dimension holds ONLY the four user-confirmed qualitative scores
+        # (AI never writes a number there -- it writes ai_dimension_reference tiers).
         dims = {d.dimension: d.score for d in get_dimensions(db, o.id)}
-        # economic / disposable must be supplied by the caller's precomputed
-        # salary/cost (we accept them via the offer's salary calc at API layer).
-        rows.append({"offer": o, "dim_scores": dims})
+        extra = computed.get(o.id) or {}
+        rows.append({
+            "offer": o,
+            "dim_scores": dims,
+            "economic": extra.get("economic"),
+            "disposable": extra.get("disposable"),
+        })
 
-    # The API layer passes precomputed economic/disposable via a side table;
-    # here we recompute from offer.salary if present and accept optional
-    # injected values through `weights` is not used for that. To keep this
-    # module pure, we require economic/disposable to be passed in via the
-    # `computed` argument from the API (which has salary_calc + cost).
     return _finalize_comparison(db, user_id=user_id, rows=rows, weights=weights)
+
 
 
 def _finalize_comparison(db, *, user_id: int, rows: list[dict], weights: dict) -> dict:

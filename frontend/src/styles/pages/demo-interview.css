@@ -1,0 +1,281 @@
+/* 在线 Demo ·「AI 认识你」冷启动访谈
+   沉浸式全屏布局（与 onboarding 同一套视觉语言），独立的 dmo- 前缀，
+   不改动任何既有页面样式。 */
+
+.dmo {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+/* ---------- 顶栏 ---------- */
+.dmo-topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-surface);
+}
+.dmo-topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+}
+.dmo-topbar__tag {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-primary);
+  background: var(--color-primary-weak);
+  border-radius: var(--radius-full);
+  padding: 2px 10px;
+}
+.dmo-skip {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  padding: 6px 4px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast);
+}
+.dmo-skip:hover { color: var(--color-primary); }
+
+/* ---------- 主区 ---------- */
+.dmo-main {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* 让内部滚动区正确收缩 */
+  overflow-x: hidden; /* 移动端兜底：任何情况下都不横向溢出 */
+}
+
+/* ---------- 第一步：引导 ---------- */
+.dmo-intro {
+  margin: auto 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+}
+.dmo-intro__avatar {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--gradient-brand);
+  color: var(--color-on-primary);
+}
+.dmo-intro__title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-3);
+  /* 标题短，允许整行展示；空间不足时按词换行而不是挤出孤字 */
+  text-wrap: pretty;
+}
+.dmo-intro__body {
+  font-size: var(--text-md);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-secondary);
+  margin: 0 auto var(--space-6);
+  max-width: 52ch;
+  text-wrap: pretty;
+}
+.dmo-intro__body strong { color: var(--color-text-primary); font-weight: var(--weight-semibold); }
+
+.dmo-guides {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.dmo-guide {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast),
+    background var(--transition-fast);
+}
+.dmo-guide:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-weak);
+  box-shadow: var(--shadow-xs);
+}
+.dmo-guide svg { flex: 0 0 auto; color: var(--color-primary); }
+
+.dmo-intro__note {
+  margin: var(--space-5) 0 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* ---------- 进度 ---------- */
+.dmo-progress {
+  flex: 0 0 auto;
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-muted);
+  overflow: hidden;
+  margin-bottom: var(--space-4);
+}
+.dmo-progress__bar {
+  height: 100%;
+  background: var(--gradient-brand);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-base);
+}
+
+/* ---------- 对话区 ---------- */
+.dmo-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-2) 0 var(--space-4);
+}
+.dmo-msg {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  max-width: 100%;
+}
+.dmo-msg--user { justify-content: flex-end; }
+.dmo-msg__avatar {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--color-ai-surface);
+  border: 1px solid var(--color-ai-border);
+  color: var(--color-ai-text);
+}
+.dmo-bubble {
+  max-width: 82%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-md);
+  line-height: var(--leading-relaxed);
+  word-break: break-word;
+  overflow-wrap: anywhere; /* 长串不撑破容器 */
+}
+.dmo-msg--ai .dmo-bubble {
+  background: var(--color-ai-surface);
+  border: 1px solid var(--color-ai-border);
+  color: var(--color-text-primary);
+}
+.dmo-msg--user .dmo-bubble {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.dmo-bubble--thinking { color: var(--color-text-muted); font-size: var(--text-sm); }
+
+/* ---------- 输入区 ---------- */
+.dmo-composer {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.dmo-composer__box {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+}
+.dmo-composer__box:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3.5px rgba(59, 110, 249, 0.13);
+}
+.dmo-textarea {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+  min-height: 48px;
+}
+.dmo-textarea::placeholder { color: var(--color-text-muted); }
+
+.dmo-example {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+  padding: 2px 0;
+}
+.dmo-example:hover { text-decoration: underline; }
+.dmo-composer__count {
+  align-self: flex-end;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* ---------- 收束 ---------- */
+.dmo-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  text-align: center;
+}
+.dmo-done__hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 640px) {
+  .dmo-main { padding: var(--space-4) var(--space-3) var(--space-4); }
+  .dmo-intro { padding: var(--space-6) var(--space-4); }
+  .dmo-intro__title { font-size: var(--text-xl); }
+  .dmo-guides { grid-template-columns: 1fr; }
+  .dmo-bubble { max-width: 88%; }
+  .dmo-topbar { padding: var(--space-3) var(--space-4); }
+}

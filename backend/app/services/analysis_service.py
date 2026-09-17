@@ -24,6 +24,8 @@ from app.repositories_offer import (
     get_ai_reference,
     get_dimensions,
     get_offer,
+    get_offers,
+    get_salary_calc,
     save_decision_analysis,
     upsert_ai_reference,
 )
@@ -86,6 +88,45 @@ def run_dimension_assessment(db: Session, *, user_id: int, offer_id: int,
 
 
 # ----------------------------- F24: decision analysis -----------------------------
+def _quantitative_inputs(db: Session, *, user_id: int,
+                         offer_ids: list[int] | None = None) -> dict[int, dict]:
+    """Compute the two quantitative dims the weighted average needs.
+
+    ``offer_dimension`` deliberately stores ONLY the four user-confirmed
+    qualitative scores, so ``economic`` / ``disposable`` have no home there.
+    They are derived from what the product already persists:
+
+      economic   = 税后年收入        (salary_calc.results.annual_after_tax)
+      disposable = 税后年收入 - 城市年度生活成本  (city_cost.monthly_total * 12)
+
+    Offers without a persisted salary calc are omitted; ``_finalize_comparison``
+    then treats those dims as unknown and excludes them from the average.
+    """
+    if offer_ids:
+        offers = [o for o in (get_offer(db, user_id, oid) for oid in offer_ids) if o is not None]
+    else:
+        offers = [o for o in get_offers(db, user_id) if o.status in ("active", "accepted")]
+
+    out: dict[int, dict] = {}
+    for o in offers:
+        calc = get_salary_calc(db, o.id)
+        results = (calc.results if calc else None) or {}
+        annual_after_tax = results.get("annual_after_tax")
+        if annual_after_tax is None:
+            continue
+        annual_after_tax = float(annual_after_tax)
+        cost_annual = 0.0
+        if o.city:
+            cost_annual = float(
+                resolve_city_cost(db, user_id=user_id, city=o.city)["monthly_total"]
+            ) * 12
+        out[o.id] = {
+            "economic": annual_after_tax,
+            "disposable": annual_after_tax - cost_annual,
+        }
+    return out
+
+
 def run_decision_analysis(db: Session, *, user_id: int, offer_ids: list[int] | None = None,
                           weights: dict | None = None, extra_context: str = "") -> dict:
     """Run F24 against the PROGRAM-computed comparison. The AI only explains.
@@ -95,7 +136,9 @@ def run_decision_analysis(db: Session, *, user_id: int, offer_ids: list[int] | N
       weights, weight_snapshot, city_costs, analysis:{recommendations, ai_status}
     }
     """
-    comp = compute_comparison(db, user_id=user_id, offer_ids=offer_ids, weights=weights)
+    computed = _quantitative_inputs(db, user_id=user_id, offer_ids=offer_ids)
+    comp = compute_comparison(db, user_id=user_id, offer_ids=offer_ids,
+                              weights=weights, computed=computed)
     comparison_id = comp["comparison_id"]
     offers = comp["offers"]
     weights = comp["weights"]

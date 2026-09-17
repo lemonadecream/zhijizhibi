@@ -356,21 +356,29 @@ OFFERS = [
      "special_deduction": 1500, "status": "active",
      "note": "B 端 SaaS，团队 8 人，直属 leader 来自大厂", "application": 0, "job": "A",
      "public_signals": ["B 端 SaaS 赛道，客户续费率是核心指标", "团队规模较小，个人负责面较广"],
-     "user_notes": "面试感受很好，业务逻辑清晰，但担心 B 端节奏偏慢、成长需要时间。"},
+     "user_notes": "面试感受很好，业务逻辑清晰，但担心 B 端节奏偏慢、成长需要时间。",
+     # 用户在决策页确认的四项 0-100 定性分（offer_dimension）。
+     # 语义：AI 只给档位（ai_dimension_reference），数字必须由用户/匹配产生——
+     # 这里就是"Demo 用户已经确认过"的那份数据，与上面的 user_notes 叙事一致。
+     "dimension_scores": {"growth": 82, "match": 78, "workload": 65, "stability": 80}},
     {"company": "麦浪文化", "job_title": "用户增长", "city": "上海",
      "industry": "内容 / 文化传媒",
      "salary": {"monthly_base": 15000, "annual_bonus_months": 2},
      "special_deduction": 1500, "status": "active",
      "note": "内容平台，增长团队刚组建，直接向增长负责人汇报", "application": 1, "job": "B",
      "public_signals": ["内容行业增长岗位，指标压力通常较大", "团队新组建，流程尚在磨合"],
-     "user_notes": "方向最匹配我想做的事，薪资也最高，但听说加班多、指标压力大。"},
+     "user_notes": "方向最匹配我想做的事，薪资也最高，但听说加班多、指标压力大。",
+     # 方向最匹配、成长最高，代价是压力大、稳定性低——保证"高分≠无脑推荐"。
+     "dimension_scores": {"growth": 90, "match": 88, "workload": 40, "stability": 55}},
     {"company": "星野数据", "job_title": "内容运营", "city": "杭州",
      "industry": "数据服务",
      "salary": {"monthly_base": 11000, "annual_bonus_months": 4},
      "special_deduction": 1500, "status": "active",
      "note": "数据服务公司，内容团队成熟，流程规范", "application": 2, "job": None,
      "public_signals": ["公司业务稳定，团队流程成熟", "内容岗位偏执行，自主空间有限"],
-     "user_notes": "最稳定的一份，但工作内容偏执行，担心成长速度。"},
+     "user_notes": "最稳定的一份，但工作内容偏执行，担心成长速度。",
+     # 最稳、最轻松，代价是成长与匹配偏低——形成"稳 vs 成长"的真实取舍。
+     "dimension_scores": {"growth": 62, "match": 70, "workload": 82, "stability": 85}},
 ]
 
 # Offer 的 status 必须落在 offer_service._VALID_STATUSES 内：
@@ -384,21 +392,29 @@ OFFERS = [
      "special_deduction": 1500, "status": "active",
      "note": "B 端 SaaS，团队 8 人，直属 leader 来自大厂", "application": 0, "job": "A",
      "public_signals": ["B 端 SaaS 赛道，客户续费率是核心指标", "团队规模较小，个人负责面较广"],
-     "user_notes": "面试感受很好，业务逻辑清晰，但担心 B 端节奏偏慢、成长需要时间。"},
+     "user_notes": "面试感受很好，业务逻辑清晰，但担心 B 端节奏偏慢、成长需要时间。",
+     # 用户在决策页确认的四项 0-100 定性分（offer_dimension）。
+     # 语义：AI 只给档位（ai_dimension_reference），数字必须由用户/匹配产生——
+     # 这里就是"Demo 用户已经确认过"的那份数据，与上面的 user_notes 叙事一致。
+     "dimension_scores": {"growth": 82, "match": 78, "workload": 65, "stability": 80}},
     {"company": "麦浪文化", "job_title": "用户增长", "city": "上海",
      "industry": "内容 / 文化传媒",
      "salary": {"monthly_base": 15000, "annual_bonus_months": 2},
      "special_deduction": 1500, "status": "active",
      "note": "内容平台，增长团队刚组建，直接向增长负责人汇报", "application": 1, "job": "B",
      "public_signals": ["内容行业增长岗位，指标压力通常较大", "团队新组建，流程尚在磨合"],
-     "user_notes": "方向最匹配我想做的事，薪资也最高，但听说加班多、指标压力大。"},
+     "user_notes": "方向最匹配我想做的事，薪资也最高，但听说加班多、指标压力大。",
+     # 方向最匹配、成长最高，代价是压力大、稳定性低——保证"高分≠无脑推荐"。
+     "dimension_scores": {"growth": 90, "match": 88, "workload": 40, "stability": 55}},
     {"company": "星野数据", "job_title": "内容运营", "city": "杭州",
      "industry": "数据服务",
      "salary": {"monthly_base": 11000, "annual_bonus_months": 4},
      "special_deduction": 1500, "status": "active",
      "note": "数据服务公司，内容团队成熟，流程规范", "application": 2, "job": None,
      "public_signals": ["公司业务稳定，团队流程成熟", "内容岗位偏执行，自主空间有限"],
-     "user_notes": "最稳定的一份，但工作内容偏执行，担心成长速度。"},
+     "user_notes": "最稳定的一份，但工作内容偏执行，担心成长速度。",
+     # 最稳、最轻松，代价是成长与匹配偏低——形成"稳 vs 成长"的真实取舍。
+     "dimension_scores": {"growth": 62, "match": 70, "workload": 82, "stability": 85}},
 ]
 
 # 决策权重：成长优先（贴合林小满的画像倾向）
@@ -541,6 +557,21 @@ def seed(client: TestClient) -> dict:
             "public_signals": spec["public_signals"],
             "user_notes": spec["user_notes"],
         })
+        # 用户确认的四维 0-100 分 → 落 offer_dimension（走产品自己的服务函数）。
+        # 缺这一步时 compute_comparison 读到的四项全是 None，综合分会退化成
+        # 只用 economic/disposable，导致 75% 的权重被静默忽略、三个 Offer 并列 0 分。
+        if spec.get("dimension_scores"):
+            from app.db.base import SessionLocal as _SessionLocal
+            from app.models.offer import Offer as _OfferRow
+            from app.services.decision_service import save_dimension_scores as _save_dimension_scores
+
+            with _SessionLocal() as _db:
+                _row = _db.get(_OfferRow, offer_id)
+                if _row is not None:
+                    _save_dimension_scores(
+                        _db, user_id=_row.user_id, offer_id=offer_id,
+                        scores=spec["dimension_scores"],
+                    )
 
     # ---- 决策权重 + F23/F24 对比分析 ----
     api.put("/api/offer/weights", DECISION_WEIGHTS)

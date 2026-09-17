@@ -41,14 +41,15 @@ export default function Login() {
     }
   };
 
-  // Demo 入口：与上面的普通登录共用同一个 login()，只是凭据固定、落点固定为 /profile。
-  // 演示账号的画像已生成，因此这里**不做** onboarding 判定，也不进 onboarding。
+  // Demo 入口：与上面的普通登录共用同一个 login()，只是凭据固定、落点固定为 /demo-interview。
+  // 先走一段「AI 认识你」的冷启动访谈（前端确定性脚本，不写后端状态、不调 LLM），
+  // 聊完再进入已 seed 好的职业画像——Demo 访客的体验从"看见结论"变成"经历过程"。
   const enterDemo = async () => {
     setError(null);
     setDemoBusy(true);
     try {
       await login(DEMO_IDENTIFIER, DEMO_PASSWORD);
-      navigate("/profile");
+      navigate("/demo-interview");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "演示账号暂时不可用，请稍后重试");
     } finally {

@@ -167,6 +167,10 @@
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-5);
 }
+/* 标题与「AI 给你的定位」同排，badge 垂直居中跟随标题 */
+.pv-hero-head__identity {
+  display: flex; align-items: center; gap: var(--space-3); min-width: 0;
+}
 .pv-hero-title { font-size: var(--text-2xl); font-weight: var(--weight-bold); }
 .pv-positioning {
   font-size: var(--text-lg);
@@ -292,6 +296,10 @@
 .pv-gap-why { font-size: var(--text-sm); color: var(--color-text-secondary); margin-top: 4px; line-height: 1.5; }
 
 .pv-note { font-size: var(--text-sm); color: var(--color-text-secondary); line-height: 1.7; margin: 0; }
+
+/* AI 说明卡：与上一个模块之间保留 32px 呼吸感，避免卡片视觉粘连。
+   只作用在画像页（.pv 的直接子元素），不动全局的 .ai-block。 */
+.pv > .ai-block { margin-top: var(--space-8); }
 
 @media (max-width: 767px) {
   .pv-grid-2 { grid-template-columns: 1fr; }
