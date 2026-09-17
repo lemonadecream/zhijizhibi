@@ -85,6 +85,15 @@ export default function OfferPage() {
   const [delOffer, setDelOffer] = useState<OfferOut | null>(null);
   // 综合得分 / 排名（由已有 getComparison 端点计算，仅用于卡片视觉突出，不改评分逻辑）。
   const [scores, setScores] = useState<Record<number, { composite_score: number; rank: number }>>({});
+  /* ★ 决策偏好(权重)的"已落库版本号"。
+     根因（线上验收："改了决策偏好，综合分没变"）：
+     分数的 useEffect 依赖数组里**只有 offers**，所以加载完 Offer 之后
+     再也不会重新拉取 comparison —— 用户改了偏好、权重也存进后端了，
+     但页面上那张分数表还是首次挂载时那一次的结果。
+     修法：权重**成功落库后**把版本号 +1，让同一条 effect 再跑一次。
+     强调"成功落库后"——综合分必须由程序按**已持久化的权重**重算，
+     不能在客户端本地推算（那等于把评分逻辑复制一份到前端）。 */
+  const [weightsRev, setWeightsRev] = useState(0);
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -121,11 +130,14 @@ export default function OfferPage() {
   }, []);
 
   // 自动拉取各 Offer 综合得分 / 排名，让比较结果成为首屏焦点（不改评分逻辑）。
+  // 依赖里必须带 weightsRev：偏好一改，程序就要用新权重重算一遍。
   useEffect(() => {
     if (offers.length === 0) return;
+    let cancelled = false;
     api
       .getComparison(offers.map((o) => o.offer_id))
       .then((c) => {
+        if (cancelled) return;
         const map: Record<number, { composite_score: number; rank: number }> = {};
         c.offers.forEach((o) => {
           map[o.offer_id] = { composite_score: o.composite_score, rank: o.rank };
@@ -133,7 +145,8 @@ export default function OfferPage() {
         setScores(map);
       })
       .catch(() => { /* 分数为可选展示，失败不影响列表 */ });
-  }, [offers]);
+    return () => { cancelled = true; };
+  }, [offers, weightsRev]);
 
   // Phase 6.5-5.1: open the "from applications" picker (lists existing tracking records).
   const openAppPicker = async () => {
@@ -160,6 +173,8 @@ export default function OfferPage() {
   };
 
   // Phase 6.5-5.2: apply a preset (F22, user-confirmed action -> saved).
+  // 保存成功后再 bump weightsRev —— 顺序不能反：先落库、再重算，
+  // 否则重新拉取的 comparison 读到的还是旧权重，页面会"改了但没变"。
   const applyPreset = async (key: string) => {
     const preset = WEIGHT_PRESETS[key];
     if (!preset) return;
@@ -167,7 +182,8 @@ export default function OfferPage() {
     setPresetName(key);
     try {
       await api.saveWeights({ weights: preset.weights, preset_name: key });
-      toast.success(`已应用「${preset.label}」`);
+      setWeightsRev((v) => v + 1);
+      toast.success(`已应用「${preset.label}」，综合得分已按新权重重算`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "应用方案失败");
     }
@@ -178,7 +194,8 @@ export default function OfferPage() {
     try {
       await api.saveWeights({ weights, preset_name: null });
       setPresetName(null);
-      toast.success("权重已保存");
+      setWeightsRev((v) => v + 1); // 同上：落库成功后才重算
+      toast.success("权重已保存，综合得分已按新权重重算");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "保存失败");
     }
@@ -713,7 +730,10 @@ function WeightsPanel({ weights, presetName, onPreset, onChange, onSave }: {
       <div className="tk-weights__head">
         <div>
           <h2 className="tk-section__title">我的决策偏好</h2>
-          <p className="tk-hint">这次选 Offer 你更看重什么？权重会影响综合排序，但不会替你做决定。</p>
+          <p className="tk-hint">
+            这次选 Offer 你更看重什么？权重会影响综合排序，但不会替你做决定。
+            选预设会立即按新权重重算；拖动滑块后请点「保存权重」。
+          </p>
         </div>
         <Button variant="primary" size="sm" onClick={onSave}>保存权重</Button>
       </div>

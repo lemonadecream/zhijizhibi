@@ -1,13 +1,40 @@
 /* 在线 Demo ·「AI 认识你」冷启动访谈
    沉浸式全屏布局（与 onboarding 同一套视觉语言），独立的 dmo- 前缀，
-   不改动任何既有页面样式。 */
+   不改动任何既有页面样式。
 
+   ★ 三层结构（viewport → chat-content → composer）：
+     1. .dmo          —— viewport 层：**确定**的一屏高，overflow:hidden
+     2. .dmo-main     —— 弹性列容器（min-height:0 是关键）
+        ├─ .dmo-scroll   —— 唯一的滚动容器（AI 对话内容）
+        └─ .dmo-composer —— flex:0 0 auto，永远贴在 main 底部
+   滚动只发生在 .dmo-scroll 内部，页面本身不再增长。
+
+   root cause（线上验收实测"回复一多输入框就被顶出屏幕"）：
+   上一版这里是 `min-height: 100vh` / `100dvh`。在 flex 列容器上给"最小高度"，
+   容器高度**仍然由内容决定**：内部 .dmo-scroll 带 flex:1 1 auto，
+   会跟着消息一起长高 → overflow-y:auto 永远不触发 → 整个页面被撑长，
+   composer 被一路推下视口。改成确定的 height 后滚动才真正落在
+   .dmo-scroll 上，composer 被按在底部不动。 */
 .dmo {
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;      /* 移动端：跟随浏览器动态工具栏，避免底部被遮 */
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  position: relative;  /* 首屏极光背景（AuroraBackdrop）的定位上下文 */
   background: var(--color-bg);
+}
+
+/* ★ 首屏（AI 氛围屏）：极淡蓝紫极光。
+   配方与 onboarding 欢迎页的 .onb-welcome 完全一致 —— 同一套视觉语言、
+   无新增装饰元素，只是此前从未挂到 demo 页上，所以线上看着像普通后台。
+   两层 radial-gradient 分别压到 0.10 / 0.09 透明度，再以 --color-bg 打底，
+   得到"大面积很浅的紫"而不是浓重紫，且不影响正文对比度。 */
+.dmo--intro {
+  background:
+    radial-gradient(56% 44% at 18% 12%, rgba(109, 79, 216, 0.10), transparent 62%),
+    radial-gradient(48% 40% at 84% 82%, rgba(59, 110, 249, 0.09), transparent 60%),
+    var(--color-bg);
 }
 
 /* ---------- 顶栏 ---------- */
@@ -20,6 +47,14 @@
   padding: var(--space-3) var(--space-5);
   border-bottom: 1px solid var(--color-border-subtle);
   background: var(--color-surface);
+  /* 极光背景是 absolute 铺满 .dmo 的，同级元素必须抬到它上面 */
+  position: relative;
+  z-index: 1;
+}
+/* 首屏顶栏融进极光：避免一条白色横条把整片氛围拦腰切断 */
+.dmo--intro .dmo-topbar {
+  background: transparent;
+  border-bottom-color: transparent;
 }
 .dmo-topbar__brand {
   display: flex;
@@ -55,12 +90,19 @@
   width: 100%;
   max-width: 720px;
   margin: 0 auto;
-  padding: var(--space-6) var(--space-4) var(--space-5);
+  /* 底部内边距带上 safe-area：全面屏手机的 Home 指示条不会压住回答区 */
+  padding: var(--space-6) var(--space-4) calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
-  min-height: 0; /* 让内部滚动区正确收缩 */
+  min-height: 0; /* 让内部滚动区正确收缩 —— 三层结构的关键一行 */
   overflow-x: hidden; /* 移动端兜底：任何情况下都不横向溢出 */
+  /* 首屏内容（页面很长/小屏横屏时）允许自身滚动；进入访谈后必须锁死，
+     否则内外两个滚动容器同时活着，会出现"双滚动条"。 */
+  overflow-y: auto;
+  position: relative;
+  z-index: 1; /* 同顶栏：压住极光背景层 */
 }
+.dmo--chat .dmo-main { overflow-y: hidden; }
 
 /* ---------- 第一步：引导 ---------- */
 .dmo-intro {
@@ -72,6 +114,15 @@
   padding: var(--space-8) var(--space-6);
   text-align: center;
 }
+/* 首屏不用卡片容器：一层白底会把背后的极光挡掉大半，
+   读起来仍然像"后台里的一个白盒子"。改为让内容直接落在极光上 ——
+   这正是 onboarding 欢迎页的量法（同一套视觉语言）。
+   DOM 不变，仍是 <section class="dmo-intro">，只是去掉容器皮肤。 */
+.dmo--intro .dmo-intro {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
 .dmo-intro__avatar {
   width: 56px;
   height: 56px;
@@ -82,6 +133,11 @@
   border-radius: var(--radius-full);
   background: var(--gradient-brand);
   color: var(--color-on-primary);
+}
+/* 首屏的 AI 头像加一层很淡的紫色光晕（与 .onb-ai-avatar 同一个值），
+   让它在极光上读作"AI 主体"而不是一枚平贴上去的图标 */
+.dmo--intro .dmo-intro__avatar {
+  box-shadow: 0 4px 14px rgba(109, 79, 216, 0.28);
 }
 .dmo-intro__title {
   font-size: var(--text-2xl);
@@ -148,11 +204,12 @@
   transition: width var(--transition-base);
 }
 
-/* ---------- 对话区 ---------- */
+/* ---------- 对话区（唯一滚动容器） ---------- */
 .dmo-scroll {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain; /* 滚到底不把整页带走 */
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -198,7 +255,11 @@
 }
 .dmo-bubble--thinking { color: var(--color-text-muted); font-size: var(--text-sm); }
 
-/* ---------- 输入区 ---------- */
+/* ---------- 输入区（三层结构的第三层） ---------- */
+/* 它不在滚动容器里，而是 .dmo-scroll 的兄弟节点，靠 `flex: 0 0 auto`
+   占据 .dmo-main 的固定末尾空间。因此无论消息多长，
+   它都留在视口底部，且**不需要 position: fixed / sticky**——
+   也就不存在"浮在内容上"的突兀感。 */
 .dmo-composer {
   flex: 0 0 auto;
   display: flex;
@@ -269,11 +330,20 @@
 
 /* ---------- 响应式 ---------- */
 @media (max-width: 640px) {
-  .dmo-main { padding: var(--space-4) var(--space-3) var(--space-4); }
+  .dmo-main {
+    padding: var(--space-4) var(--space-3) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  }
   .dmo-intro { padding: var(--space-6) var(--space-4); }
   .dmo-intro__title { font-size: var(--text-xl); }
   .dmo-bubble { max-width: 88%; }
   .dmo-topbar { padding: var(--space-3) var(--space-4); }
   /* 顶栏三个元素（品牌 + 标识 + 跳过）在窄屏换行，避免互相挤压 */
   .dmo-topbar__brand { flex-wrap: wrap; row-gap: 4px; }
+  /* 窄屏把输入框最小高度收一点，保证整段 composer 不会被视口切掉 */
+  .dmo-textarea { min-height: 40px; }
+}
+/* 横屏手机 / 可视高度特别矮时，首屏内容可能高于一屏：
+   让出垂直居中、改为自然滚动，避免内容被裁切 */
+@media (max-height: 560px) {
+  .dmo-intro { margin: 0 auto; }
 }

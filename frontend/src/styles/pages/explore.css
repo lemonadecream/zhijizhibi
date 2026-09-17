@@ -5,58 +5,92 @@
 
 .exp-page { max-width: var(--content-max); }
 
-/* 第一层：画像摘要条
-   根因（按真实截图实测，viewport 1024）：
-   卡片内宽 697px。上一版把它切成 1fr / 1fr，于是左右各得约 340px。
-   但左侧「你是谁」的定位文案只有约 250px 就完了 —— 它左边留下 ~90px 空白，
-   视觉上"没写完"；右侧却要塞下「优势/兴趣/能力」三组、且优势那组
-   单条标签就有三段长文本（最长 199px），三段被压在 340px 里反复折行，
-   组与组之间又只靠 space-2(8px) 分隔 → 挤成一片。
-   修法：按**内容重量**分配，而不是机械对半 —— 左列收到 minmax(0, 0.86fr)，
-   右列放量到 minmax(0, 1.14fr)，并把右列三组从"并排三小列"改为
-   "纵向三行"（每组独占一行整个宽度），组间距提到 space-5。
-   这样左列不再空出大片、右列标签也不再被迫折行。 */
+/* 第一层：画像摘要条 ——「你是谁」= 核心总结，「优势/兴趣/能力」= 它的结构化补充
+   ------------------------------------------------------------
+   根因（线上验收第二次反馈"左列还是一个大空盒子"）：
+   上一轮只调了 0.86fr / 1.14fr 的比例。但比例不是问题所在 ——
+   真正的问题是**右列三组各自"组名在上、标签在下"地堆叠**：
+      每组高度 = 组名 20px + gap 8px + 标签行 28px = 56px
+      三组 = 56×3 + 组间距 20×2 = 208px
+   而左列只有「你是谁」20px + 定位文案 2 行 46px = 66px。
+   两侧差 3 倍，左列却被 align-items:center 钉在这条 208px 高的格子里居中，
+   于是上下各空 ~70px —— 论比例怎么调都治不好，因为它本来就是"高度差"问题。
+
+   修法（两条，都不靠调比例）：
+   (1) 右列每组改成**组名与标签同一行**（组名独立一列）：
+       每组高度塌到 28px，三组 = 28×3 + 组间距 14×2 = 112px。
+       右侧高度腰斩，与左侧 66~100px 进入同一量级，卡片整体也矮了近一半。
+   (2) 左列改为**内容驱动定宽**而不是 fr：定位文案用 --text-md(15px) 排版，
+       260px ≈ 每行 17 个汉字，一段 40~45 字的定位正好落 2~3 行，
+       读起来是"一段完整的话"而不是"被拉宽后剩一行半"。
+       再给它一条 1px 发丝分隔线把左列**关住** —— 有了边界，
+       它才读作一块"信息主体"，而不是右栏旁边漏出来的一片空白。
+   ------------------------------------------------------------ */
 .exp-profile-bar {
   display: grid;
-  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
-  align-items: center;
-  column-gap: var(--space-6);
+  /* 左列 260px = 15px 中文 ≈ 17 字/行的自然阅读宽度（内容驱动，非拍比例）；
+     右列拿走全部剩余宽度，让标签尽量少折行。 */
+  grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+  align-items: center;          /* 两块各自在行内垂直居中 */
+  column-gap: var(--space-5);
   row-gap: var(--space-5);
   background: var(--color-surface); border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg); padding: var(--space-5) var(--space-5);
+  border-radius: var(--radius-lg); padding: var(--space-5) var(--space-6);
   margin-bottom: var(--space-5);
 }
 /* 不设任何固定高度：卡片高度完全由内容决定 */
-.exp-profile-bar__who { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+.exp-profile-bar__who {
+  display: flex;
+  align-items: flex-start;      /* 头像与「你是谁」首行同轴，块内不再居中飘 */
+  gap: var(--space-3);
+  min-width: 0;
+  /* 发丝分隔线：1px 中性灰，属于结构而不是装饰 */
+  border-right: 1px solid var(--color-border-subtle);
+  padding-right: var(--space-5);
+}
 .exp-profile-bar__avatar {
   width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary-weak);
-  color: var(--color-primary); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  color: var(--color-primary); display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
 }
-.exp-profile-bar__title { font-size: var(--text-xs); color: var(--color-text-muted); }
-/* 定位文案：给足行高，作为左列唯一的内容主体 */
+.exp-profile-bar__title { font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: 2px; }
+/* 定位文案：左列唯一的内容主体，升到正文字号，让它有"总结"的分量 */
 .exp-profile-bar__pos {
-  font-size: var(--text-sm); font-weight: var(--weight-medium);
+  font-size: var(--text-md); font-weight: var(--weight-medium);
   line-height: var(--leading-relaxed); min-width: 0; text-wrap: pretty;
 }
-/* 优势 / 兴趣 / 能力：纵向三行，每组独占整行宽度 —— 让长标签能一行放下，
-   同时组与组之间有明确的纵向节奏，不再挤成一个"标签墙"。 */
+
+/* 优势 / 兴趣 / 能力：纵向三行，每组独占整行（组名 1 列 + 标签 1 列） */
 .exp-profile-bar__cols {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-5);
+  gap: 14px;                    /* 组与组的纵向节奏（略大于组内行距，层级才清楚） */
   min-width: 0;
 }
-/* 每组（优势/兴趣/能力）：标题与标签之间、标签彼此之间都要有呼吸 */
-.exp-profile-bar__col { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+/* 每组：组名与标签**同一行** —— 这是让右列高度腰斩的关键一行 */
+.exp-profile-bar__col {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: start;
+  column-gap: var(--space-3);
+  min-width: 0;
+}
 /* 标签容器：这里才是"标签墙"的真正来源。
    旧版是一个裸 <div> 紧接着并列的 Tag，没有任何 gap，
-   Tag 又是 inline-flex，于是同一行内几乎贴在一起、多行时上下也贴死。 */
+   Tag 又是 inline-flex，于是同一行内几乎贴在一起、多行时上下也贴死。
+   行距(10px) > 列距(8px)：折行时才分得清"哪些是同组的第二行"。 */
 .exp-profile-bar__col > div {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: 10px var(--space-2);
 }
-.exp-profile-bar__col .exp-k { font-size: var(--text-xs); color: var(--color-text-muted); }
+.exp-profile-bar__col .exp-k {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  /* 28px = .tag 的实际高度（12px × 1.7 行高 + 3px 上下 padding + 1px 上下描边），
+     让组名与第一行标签在同一条水平线上 */
+  line-height: 28px;
+}
 
 /* 第二层：AI 探索入口（轻量，统一 AI Visual Language） */
 .exp-ai-bar {
@@ -187,14 +221,20 @@
 /* 响应式 */
 @media (max-width: 1023px) {
   .exp-rec-grid { grid-template-columns: 1fr; }
-  /* 中等宽度：画像条改为上下两段（右列三组本来就是纵向三行，无需再变） */
+  /* 中等宽度：画像条改为上下两段。左列不再需要分隔线（它已经独占一行了），
+     横向发丝线在上下堆叠的结构里会变成一条无意义的横杠。 */
   .exp-profile-bar { grid-template-columns: minmax(0, 1fr); column-gap: 0; row-gap: var(--space-5); }
+  .exp-profile-bar__who { border-right: none; padding-right: 0; }
 }
 @media (max-width: 640px) {
   .exp-ai-bar__input { flex-direction: column; align-items: stretch; }
   .exp-ai-bar__input .btn { width: 100%; }
-  .exp-profile-bar { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-5); }
-  .exp-profile-bar__cols { gap: var(--space-5); }
+  .exp-profile-bar { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-4); padding: var(--space-4) var(--space-4); }
+  .exp-profile-bar__cols { gap: var(--space-3); }
+  /* 窄屏放不下"组名列 + 标签列"：退回组名在上、标签在下的堆叠，
+     把整行宽度让给标签，长标签才不至于被挤成奇怪的窄列 */
+  .exp-profile-bar__col { grid-template-columns: minmax(0, 1fr); row-gap: 6px; }
+  .exp-profile-bar__col .exp-k { line-height: var(--leading-normal); }
   .exp-compare__head, .exp-compare__row { grid-template-columns: 72px repeat(var(--exp-cols, 2), 1fr); }
   .exp-compare__cell { font-size: var(--text-xs); }
 }

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import BrandMark from "../../components/ui/BrandMark";
 import Button from "../../components/ui/Button";
 import Icon from "../../components/ui/Icon";
+import { AuroraBackdrop } from "../../components/ui/Illustrations";
 import {
   CLOSING_LINE,
   INTRO_OPENER,
@@ -133,7 +134,13 @@ export default function DemoInterviewPage() {
   const exampleForThisTurn = EXAMPLE_PER_TURN[turn + 1];
 
   return (
-    <div className="dmo">
+    /* 两种态共用同一个三层骨架（viewport → chat-content → composer）：
+       - dmo--intro：首屏，极淡蓝紫极光 + 极光 SVG，给"AI 产品"的氛围；
+       - dmo--chat ：多轮访谈，氛围撤掉、换成干净的阅读底色，让 AI/用户气泡成为主角。
+       骨架不变，只是通过修饰类切换滚动策略与背景。 */
+    <div className={`dmo ${started ? "dmo--chat" : "dmo--intro"}`}>
+      {/* 极光背景（复用 onboarding 欢迎页的同一个 SVG 组件，非新增装饰） */}
+      {!started && <AuroraBackdrop />}
       <header className="dmo-topbar">
         <div className="dmo-topbar__brand">
           <BrandMark size={24} />

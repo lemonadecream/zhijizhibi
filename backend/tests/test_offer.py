@@ -186,3 +186,87 @@ def test_user_isolation(client):
     # user 2 cannot see user 1's offer
     got = client.get(f"/api/offer/applications/{o['offer_id']}", headers=h2)
     assert got.status_code == 404
+
+
+def test_offer_routes_release_db_sessions(client):
+    """Offer 路由必须从 ``Depends(get_db)`` 取 session，请求结束即把连接还给池。
+
+    回归背景（本用例守的就是这个）：
+    ``app/api/offer.py`` 曾经是**全项目唯一**不用 ``Depends(get_db)`` 的路由 ——
+    它自带一个 ``_db()``，直接 ``return SessionLocal()`` 且从不 close
+    （只有 ``salary_calc`` 用 try/finally 关掉了）。每个请求因此漏一个池化连接，
+    默认池只有 size 5 + overflow 10，请求量一上来就
+    ``QueuePool limit of size 5 overflow 10 reached``（30s 超时）。
+
+    现在全部端点改用项目标准的 ``get_db``（yield 出 session，finally 里 close），
+    所以每打完一个端点，池里的 checked-out 连接数都必须回到基线；
+    连跑多轮也不能出现线性增长。
+
+    同时顺带断言每个端点都返回 2xx —— 否则「连接还回来了」可能只是因为它
+    压根没跑成（get_db 在异常路径上同样会 close），测试就变成空转。
+    """
+    from app.db.base import engine
+
+    pool = engine.pool
+    assert hasattr(pool, "checkedout"), f"连接池不可观测: {type(pool).__name__}"
+
+    h = _auth_header(client)
+    o = _make_offer(client, h)
+    oid = o["offer_id"]
+    client.put(f"/api/offer/applications/{oid}", json={"status": "active"}, headers=h)
+
+    # 删除 / accept 会把 Offer 推出可比较状态，各用一个临时 Offer 来打
+    def fresh_offer_id() -> int:
+        return client.post("/api/offer/applications", json={
+            "company": "临时", "job_title": "临时", "city": "北京"}, headers=h).json()["offer_id"]
+
+    def delete_fresh():
+        return client.delete(f"/api/offer/applications/{fresh_offer_id()}", headers=h)
+
+    def accept_fresh():
+        return client.post(f"/api/offer/applications/{fresh_offer_id()}/accept", headers=h)
+
+    # offer.py 里全部 13 个端点，一个都不漏
+    endpoints: list[tuple[str, object]] = [
+        ("POST /applications", lambda: client.post("/api/offer/applications", json={
+            "company": "临时", "job_title": "临时", "city": "北京"}, headers=h)),
+        ("GET /applications", lambda: client.get("/api/offer/applications", headers=h)),
+        ("GET /applications/{id}", lambda: client.get(f"/api/offer/applications/{oid}", headers=h)),
+        ("PUT /applications/{id}",
+         lambda: client.put(f"/api/offer/applications/{oid}", json={"note": "备注"}, headers=h)),
+        ("POST /applications/{id}/salary_calc",
+         lambda: client.post(f"/api/offer/applications/{oid}/salary_calc", json={}, headers=h)),
+        ("POST /applications/{id}/assess",
+         lambda: client.post(f"/api/offer/applications/{oid}/assess", json={}, headers=h)),
+        ("DELETE /applications/{id}", delete_fresh),
+        ("POST /applications/{id}/accept", accept_fresh),
+        ("GET /cities", lambda: client.get("/api/offer/cities", headers=h)),
+        ("PUT /cities/{city}",
+         lambda: client.put("/api/offer/cities/北京", json={"rent": 3200}, headers=h)),
+        ("GET /weights", lambda: client.get("/api/offer/weights", headers=h)),
+        ("PUT /weights", lambda: client.put("/api/offer/weights", json={
+            "weights": {"economic": 25, "disposable": 20, "workload": 15,
+                        "stability": 15, "growth": 15, "match": 10},
+            "preset_name": "balanced"}, headers=h)),
+        ("GET /comparison", lambda: client.get("/api/offer/comparison", headers=h)),
+    ]
+
+    baseline = pool.checkedout()
+
+    # ① 逐个端点核对：一旦有端点漏连接，立刻带着端点名失败（而不是等到池耗尽）
+    for label, call in endpoints:
+        resp = call()
+        assert 200 <= resp.status_code < 300, f"{label} 返回 {resp.status_code}: {resp.text[:200]}"
+        now = pool.checkedout()
+        assert now <= baseline, (
+            f"{label} 结束后连接没有还回连接池：baseline={baseline}, now={now} "
+            f"—— 这个端点仍在自行创建 Session 而没有 close"
+        )
+
+    # ② 全部端点再连跑两轮：真正的泄漏会随请求线性增长，修好后必须保持平坦
+    for _ in range(2):
+        for _, call in endpoints:
+            call()
+    assert pool.checkedout() <= baseline, (
+        f"连接数随请求增长：baseline={baseline}, now={pool.checkedout()}"
+    )
